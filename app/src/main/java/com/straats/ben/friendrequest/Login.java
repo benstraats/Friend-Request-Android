@@ -9,34 +9,4 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
     }
-
-
-    public void spam() {
-        System.out.println("hello ori");
-        System.out.println("hello ori");
-        System.out.println("hello ori");
-        System.out.println("hello ori");
-        System.out.println("hello ori");
-        System.out.println("hello ori");
-        System.out.println("hello ori");
-        System.out.println("hello ori");
-        System.out.println("hello ori");
-        System.out.println("hello ori");
-        System.out.println("hello ori");
-        System.out.println("hello ori");
-        System.out.println("hello ori");
-        System.out.println("hello ori");
-        System.out.println("hello ori");
-        System.out.println("hello ori");
-        System.out.println("hello ori");
-        System.out.println("hello ori");
-        System.out.println("hello ori");
-    }
-
-
-    public void bob() {
-        //asfasd
-    }
-
-    hello benjamin
 }
