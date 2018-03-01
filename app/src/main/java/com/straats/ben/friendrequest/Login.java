@@ -10,4 +10,8 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
     }
+
+    public void hello() {
+        System.out.println("hello");
+    }
 }
