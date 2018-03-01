@@ -32,4 +32,9 @@ public class Login extends AppCompatActivity {
         System.out.println("hello ori");
         System.out.println("hello ori");
     }
+
+
+    public void bob() {
+        //asfasd
+    }
 }
