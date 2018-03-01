@@ -12,6 +12,6 @@ public class Login extends AppCompatActivity {
     }
 
     public void hello() {
-        System.out.println("hello");
+        System.out.println("HELLO");
     }
 }
