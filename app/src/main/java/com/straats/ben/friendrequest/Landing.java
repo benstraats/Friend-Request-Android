@@ -37,21 +37,18 @@ public class Landing extends AppCompatActivity {
         mainListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //Toast.makeText(getApplicationContext(), "Name: " + users.get(position) + " Position: " + position, Toast.LENGTH_SHORT).show();
-                //View anothers profile
                 Intent intent = new Intent(getApplicationContext(), ViewProfile.class);
                 startActivity(intent);
             }
         });
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Start edit my profile activity
                 Intent intent = new Intent(getApplicationContext(), Profile.class);
                 startActivity(intent);
             }

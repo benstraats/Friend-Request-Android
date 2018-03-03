@@ -6,17 +6,20 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.TextView;
 
 public class ViewProfile extends AppCompatActivity {
+
+    TextView profileText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_profile);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -26,6 +29,17 @@ public class ViewProfile extends AppCompatActivity {
         });
 
         fab.setVisibility(View.INVISIBLE);
+
+        profileText = findViewById(R.id.profileText);
+
+        fillProfile();
     }
 
+    private void fillProfile() {
+        String text = "Instagram: @user\n" +
+                "Twitter: @Usseerr\n" +
+                "Youtube: Sick Gamer 22\n" +
+                "Linkedin: @sadfff";
+        profileText.setText(text);
+    }
 }
