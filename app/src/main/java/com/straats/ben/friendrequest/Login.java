@@ -63,4 +63,8 @@ public class Login extends AppCompatActivity {
             isSignUp = true;
         }
     }
+
+    public void buttontoast(View v){
+
+    }
 }
