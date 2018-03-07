@@ -65,6 +65,7 @@ public class Login extends AppCompatActivity {
     }
 
     public void buttontoast(View v){
+        Toast.makeText(getApplicationContext(),"Hello " + usernameTextBox.getText(),Toast.LENGTH_LONG).show();
 
     }
 }
