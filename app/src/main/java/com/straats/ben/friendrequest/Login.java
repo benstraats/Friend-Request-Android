@@ -8,6 +8,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.VolleyError;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+
 public class Login extends AppCompatActivity {
 
     private Button signUpButton;
@@ -39,13 +47,10 @@ public class Login extends AppCompatActivity {
 
     protected void loginClick(View v) {
         if (isSignUp) {
-            Toast.makeText(getApplicationContext(),"Signing you up",Toast.LENGTH_LONG).show();
+            signMeUp(usernameTextBox.getText().toString(), nameTextBox.getText().toString(), passwordTextBox.getText().toString(), confirmPasswordTextBox.getText().toString());
         } else {
-            Toast.makeText(getApplicationContext(),"Logging you in",Toast.LENGTH_LONG).show();
+            logMeIn(usernameTextBox.getText().toString(), passwordTextBox.getText().toString());
         }
-
-        Intent intent = new Intent(this, Landing.class);
-        startActivity(intent);
     }
 
     protected void signUpClick(View v) {
@@ -61,6 +66,73 @@ public class Login extends AppCompatActivity {
             loginButton.setText("Confirm");
             signUpButton.setText("Back to login");
             isSignUp = true;
+        }
+    }
+
+    private void logMeIn(String username, String password) {
+
+        HashMap<String, String> loginBody = new HashMap<>();
+        loginBody.put("strategy", "local");
+        loginBody.put("email", username);
+        loginBody.put("password", password);
+
+        Utils.VolleyCallback callback = new Utils.VolleyCallback() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                try {
+                    Utils.accessToken = response.getString("accessToken");
+                    Intent intent = new Intent(getApplicationContext(), Landing.class);
+                    startActivity(intent);
+                } catch (JSONException e) {
+                    Toast.makeText(getApplicationContext(),"Bad Response",Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(VolleyError error) {
+                Toast.makeText(getApplicationContext(),"Bad credentials",Toast.LENGTH_LONG).show();
+            }
+        };
+
+        Utils.volleyRequest(getApplication(), Utils.authenticationURL, Utils.loginTAG,
+                Request.Method.POST, loginBody, callback);
+    }
+
+    private void signMeUp(final String username, String name, final String password, String repeatUsername) {
+        if (username.length() < 3) {
+            Toast.makeText(getApplicationContext(),"Username too short",Toast.LENGTH_LONG).show();
+        }
+        else if (name.length() < 3) {
+            Toast.makeText(getApplicationContext(),"Name too short",Toast.LENGTH_LONG).show();
+        }
+        else if (password.length() < 6) {
+            Toast.makeText(getApplicationContext(),"Password too short",Toast.LENGTH_LONG).show();
+        }
+        else if (!password.equals(repeatUsername)) {
+            Toast.makeText(getApplicationContext(),"Passwords don\'t match",Toast.LENGTH_LONG).show();
+        }
+        else {
+
+            HashMap<String, String> loginBody = new HashMap<>();
+            loginBody.put("email", username);
+            loginBody.put("name", name);
+            loginBody.put("password", password);
+
+            Utils.VolleyCallback callback = new Utils.VolleyCallback() {
+                @Override
+                public void onSuccess(JSONObject response) {
+                    logMeIn(username, password);
+                }
+
+                @Override
+                public void onFailure(VolleyError error) {
+                    Toast.makeText(getApplicationContext(),"Can\'t create the user",Toast.LENGTH_LONG).show();
+                }
+            };
+
+            Utils.volleyRequest(getApplication(), Utils.usersURL, Utils.signUpTAG,
+                    Request.Method.POST, loginBody, callback);
+
         }
     }
 }
