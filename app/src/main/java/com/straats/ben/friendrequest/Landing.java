@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -26,6 +27,9 @@ public class Landing extends AppCompatActivity {
 
     private ArrayList<String> users = new ArrayList<String>();
     private ArrayAdapter<String> adapter;
+
+    private Button pendingFriendsButton;
+    private Button addFriendsButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +62,25 @@ public class Landing extends AppCompatActivity {
         fab.setImageResource(android.R.drawable.ic_menu_edit);
 
         populateList();
+
+        pendingFriendsButton = findViewById(R.id.PendingFriendsButton);
+        addFriendsButton = findViewById(R.id.AddFriendsButton);
+
+        pendingFriendsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), PendingFriends.class);
+                startActivity(intent);
+            }
+        });
+
+        addFriendsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), FindFriends.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void populateList() {
@@ -65,15 +88,5 @@ public class Landing extends AppCompatActivity {
             users.add("Friend " + i);
         }
         adapter.notifyDataSetChanged();
-    }
-
-    protected void pendingFriendsClick(View v) {
-        Intent intent = new Intent(getApplicationContext(), PendingFriends.class);
-        startActivity(intent);
-    }
-
-    protected void addFriendsClick(View v) {
-        Intent intent = new Intent(getApplicationContext(), FindFriends.class);
-        startActivity(intent);
     }
 }
