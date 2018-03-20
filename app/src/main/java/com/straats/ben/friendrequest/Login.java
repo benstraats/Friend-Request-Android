@@ -43,30 +43,36 @@ public class Login extends AppCompatActivity {
 
         confirmPasswordTextBox.setVisibility(View.INVISIBLE);
         nameTextBox.setVisibility(View.INVISIBLE);
-    }
 
-    protected void loginClick(View v) {
-        if (isSignUp) {
-            signMeUp(usernameTextBox.getText().toString(), nameTextBox.getText().toString(), passwordTextBox.getText().toString(), confirmPasswordTextBox.getText().toString());
-        } else {
-            logMeIn(usernameTextBox.getText().toString(), passwordTextBox.getText().toString());
-        }
-    }
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isSignUp) {
+                    signMeUp(usernameTextBox.getText().toString(), nameTextBox.getText().toString(), passwordTextBox.getText().toString(), confirmPasswordTextBox.getText().toString());
+                } else {
+                    logMeIn(usernameTextBox.getText().toString(), passwordTextBox.getText().toString());
+                }
+            }
+        });
 
-    protected void signUpClick(View v) {
-        if (isSignUp) {
-            nameTextBox.setVisibility(View.INVISIBLE);
-            confirmPasswordTextBox.setVisibility(View.INVISIBLE);
-            loginButton.setText("Login");
-            signUpButton.setText("SignUp");
-            isSignUp = false;
-        } else {
-            nameTextBox.setVisibility(View.VISIBLE);
-            confirmPasswordTextBox.setVisibility(View.VISIBLE);
-            loginButton.setText("Confirm");
-            signUpButton.setText("Back to login");
-            isSignUp = true;
-        }
+        signUpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isSignUp) {
+                    nameTextBox.setVisibility(View.INVISIBLE);
+                    confirmPasswordTextBox.setVisibility(View.INVISIBLE);
+                    loginButton.setText("Login");
+                    signUpButton.setText("SignUp");
+                    isSignUp = false;
+                } else {
+                    nameTextBox.setVisibility(View.VISIBLE);
+                    confirmPasswordTextBox.setVisibility(View.VISIBLE);
+                    loginButton.setText("Confirm");
+                    signUpButton.setText("Back to login");
+                    isSignUp = true;
+                }
+            }
+        });
     }
 
     private void logMeIn(String username, String password) {
