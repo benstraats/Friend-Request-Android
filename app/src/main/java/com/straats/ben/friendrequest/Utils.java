@@ -5,6 +5,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -26,11 +27,11 @@ public class Utils {
     //VOLLEY/HTTP call section
     //URLs section
     protected static final String baseURL = "http://friendrequest.ca/";
-    protected static final String usersURL = baseURL + "users/";
-    protected static final String authenticationURL = baseURL + "authentication/";
-    protected static final String friendsURL = baseURL + "friends/";
-    protected static final String requestsURL = baseURL + "requests/";
-    protected static final String profileURL = baseURL + "profile/";
+    protected static final String usersURL = baseURL + "users";
+    protected static final String authenticationURL = baseURL + "authentication";
+    protected static final String friendsURL = baseURL + "friends";
+    protected static final String requestsURL = baseURL + "requests";
+    protected static final String profileURL = baseURL + "profile";
 
     //TAGs section
     protected static final String signUpTAG = "Sign Up";
@@ -50,7 +51,17 @@ public class Utils {
         headers.put("Accept", "application/json");
         headers.put("Content-Type", "application/json");
 
-        JsonObjectRequest jsonObjReq = new JsonObjectRequest(requestMethod, url, new JSONObject(body),
+        if (!(tag.equals(signUpTAG) || tag.equals(loginTAG))) {
+            headers.put("Authorization", "Bearer " + accessToken);
+        }
+
+        JSONObject jsonBody = null;
+
+        if (body != null) {
+            jsonBody = new JSONObject(body);
+        }
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(requestMethod, url, jsonBody,
                 new Response.Listener<JSONObject>() {
 
                     @Override
