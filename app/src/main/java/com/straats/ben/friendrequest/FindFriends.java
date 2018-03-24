@@ -28,6 +28,8 @@ public class FindFriends extends AppCompatActivity {
     private ArrayList<String> users = new ArrayList<String>();
     private ArrayAdapter<String> adapter;
 
+    private JSONArray searchedUsers;
+
     private Button searchButton;
     private EditText searchText;
 
@@ -39,12 +41,16 @@ public class FindFriends extends AppCompatActivity {
         mainListView = findViewById(R.id.SearchList);
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, users);
         mainListView.setAdapter(adapter);
-        populateList();
 
         mainListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getApplicationContext(), "Sent friend request to user " + position, Toast.LENGTH_LONG).show();
+                try {
+                    String userEmail = searchedUsers.getJSONObject(position).getString("email");
+                    requestUser(userEmail);
+                } catch (JSONException e) {
+                    Toast.makeText(getApplicationContext(),"Bad Request",Toast.LENGTH_LONG).show();
+                }
             }
         });
 
@@ -72,7 +78,7 @@ public class FindFriends extends AppCompatActivity {
 
                     int num = Math.min(total, limit);
 
-                    JSONArray searchedUsers = response.getJSONArray("data");
+                    searchedUsers = response.getJSONArray("data");
 
                     for (int i=0; i<num; i++) {
                         users.add(searchedUsers.getJSONObject(i).getString("name") + " (" + searchedUsers.getJSONObject(i).getString("email") + ")");
@@ -90,16 +96,31 @@ public class FindFriends extends AppCompatActivity {
             }
         };
 
-        String url = Utils.usersURL + "?search=" + search;
+        String url = Utils.usersURL + "?$search=" + search + "&$limit=50";
 
         Utils.volleyRequest(getApplication(), url, Utils.searchUsersTAG,
                 Request.Method.GET, null, callback);
     }
 
-    private void populateList() {
-        for (int i=0; i<50; i++) {
-            users.add("Searched User " + i);
-        }
-        adapter.notifyDataSetChanged();
+    private void requestUser(final String userEmail) {
+
+        Utils.VolleyCallback callback = new Utils.VolleyCallback() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                Toast.makeText(getApplicationContext(),"Successfully added user",Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFailure(VolleyError error) {
+                Toast.makeText(getApplicationContext(), Utils.decodeError(error), Toast.LENGTH_LONG).show();
+            }
+        };
+
+        String url = Utils.requestsURL;
+        final HashMap<String, String> body = new HashMap<>();
+        body.put("requestee", userEmail);
+
+        Utils.volleyRequest(getApplication(), url, Utils.requestUserTAG,
+                Request.Method.POST, body, callback);
     }
 }

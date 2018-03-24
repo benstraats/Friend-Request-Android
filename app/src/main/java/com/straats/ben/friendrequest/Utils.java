@@ -93,4 +93,8 @@ public class Utils {
 
     protected static String accessToken = null;
 
+    protected static String decodeError(VolleyError error) {
+        return "Generic Error";
+    }
+
 }
