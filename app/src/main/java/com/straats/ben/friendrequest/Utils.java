@@ -24,6 +24,8 @@ import java.util.Map;
 
 public class Utils {
 
+    protected static String userName;
+
     //VOLLEY/HTTP call section
     //URLs section
     protected static final String baseURL = "http://friendrequest.ca/";

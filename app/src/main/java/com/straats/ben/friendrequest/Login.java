@@ -75,7 +75,7 @@ public class Login extends AppCompatActivity {
         });
     }
 
-    private void logMeIn(String username, String password) {
+    private void logMeIn(final String username, final String password) {
 
         HashMap<String, String> loginBody = new HashMap<>();
         loginBody.put("strategy", "local");
@@ -87,6 +87,7 @@ public class Login extends AppCompatActivity {
             public void onSuccess(JSONObject response) {
                 try {
                     Utils.accessToken = response.getString("accessToken");
+                    Utils.userName = username;
                     Intent intent = new Intent(getApplicationContext(), Landing.class);
                     startActivity(intent);
                 } catch (JSONException e) {
