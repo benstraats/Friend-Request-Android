@@ -121,7 +121,7 @@ public class Login extends AppCompatActivity {
         else if (password.length() < 6) {
             Toast.makeText(getApplicationContext(),"Password too short",Toast.LENGTH_SHORT).show();
         }
-        else if (password.length() < 50) {
+        else if (password.length() > 50) {
             Toast.makeText(getApplicationContext(),"Password too long",Toast.LENGTH_SHORT).show();
         }
         else if (!password.equals(repeatUsername)) {
