@@ -15,6 +15,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -96,7 +97,14 @@ public class Utils {
     protected static String accessToken = null;
 
     protected static String decodeError(VolleyError error) {
-        return "Generic Error";
+        try {
+            JSONObject body = new JSONObject(new String(error.networkResponse.data,"UTF-8"));
+            return body.getString("message");
+        } catch (UnsupportedEncodingException e) {
+            return "Generic Error";
+        } catch (JSONException e) {
+            return "Generic Error";
+        }
     }
 
 }
