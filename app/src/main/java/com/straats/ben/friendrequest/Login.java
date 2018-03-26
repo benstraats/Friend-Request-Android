@@ -91,13 +91,13 @@ public class Login extends AppCompatActivity {
                     Intent intent = new Intent(getApplicationContext(), Landing.class);
                     startActivity(intent);
                 } catch (JSONException e) {
-                    Toast.makeText(getApplicationContext(),"Bad Response",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(),"Bad Response",Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(VolleyError error) {
-                Toast.makeText(getApplicationContext(),"Bad credentials",Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), Utils.decodeError(error), Toast.LENGTH_SHORT).show();
             }
         };
 
@@ -107,16 +107,25 @@ public class Login extends AppCompatActivity {
 
     private void signMeUp(final String username, String name, final String password, String repeatUsername) {
         if (username.length() < 3) {
-            Toast.makeText(getApplicationContext(),"Username too short",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),"Username too short", Toast.LENGTH_SHORT).show();
+        }
+        else if (username.length() > 30) {
+            Toast.makeText(getApplicationContext(), "Username too long", Toast.LENGTH_SHORT).show();
         }
         else if (name.length() < 3) {
-            Toast.makeText(getApplicationContext(),"Name too short",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),"Name too short",Toast.LENGTH_SHORT).show();
+        }
+        else if (name.length() > 100) {
+            Toast.makeText(getApplicationContext(), "Name too long", Toast.LENGTH_SHORT).show();
         }
         else if (password.length() < 6) {
-            Toast.makeText(getApplicationContext(),"Password too short",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),"Password too short",Toast.LENGTH_SHORT).show();
+        }
+        else if (password.length() < 50) {
+            Toast.makeText(getApplicationContext(),"Password too long",Toast.LENGTH_SHORT).show();
         }
         else if (!password.equals(repeatUsername)) {
-            Toast.makeText(getApplicationContext(),"Passwords don\'t match",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),"Passwords don\'t match",Toast.LENGTH_SHORT).show();
         }
         else {
 
@@ -133,7 +142,7 @@ public class Login extends AppCompatActivity {
 
                 @Override
                 public void onFailure(VolleyError error) {
-                    Toast.makeText(getApplicationContext(),"Can\'t create the user",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), Utils.decodeError(error), Toast.LENGTH_SHORT).show();
                 }
             };
 

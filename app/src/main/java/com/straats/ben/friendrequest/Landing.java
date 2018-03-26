@@ -126,13 +126,13 @@ public class Landing extends AppCompatActivity {
 
                     adapter.notifyDataSetChanged();
                 } catch (JSONException e) {
-                    Toast.makeText(getApplicationContext(),"Bad Response",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Bad Response", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(VolleyError error) {
-                Toast.makeText(getApplicationContext(),Utils.decodeError(error),Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), Utils.decodeError(error), Toast.LENGTH_SHORT).show();
             }
         };
 

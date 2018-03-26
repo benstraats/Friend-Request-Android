@@ -67,13 +67,13 @@ public class PendingFriends extends AppCompatActivity {
 
                     adapter.notifyDataSetChanged();
                 } catch (JSONException e) {
-                    Toast.makeText(getApplicationContext(),"Bad Response",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(),"Bad Response",Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(VolleyError error) {
-                Toast.makeText(getApplicationContext(),Utils.decodeError(error),Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), Utils.decodeError(error), Toast.LENGTH_SHORT).show();
             }
         };
 
@@ -90,7 +90,7 @@ public class PendingFriends extends AppCompatActivity {
             targetUser = requestedUsers.getJSONObject(position).getString("requester");
             requestID = requestedUsers.getJSONObject(position).getString("_id");
         } catch (JSONException e) {
-            Toast.makeText(getApplicationContext(),"Failed to parse requested user",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),"Failed to parse requested user",Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -100,12 +100,12 @@ public class PendingFriends extends AppCompatActivity {
         Utils.VolleyCallback callback = new Utils.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
-                Toast.makeText(getApplicationContext(),"Successfully added " + finalTargetUser, Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),"Successfully added " + finalTargetUser, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFailure(VolleyError error) {
-                Toast.makeText(getApplicationContext(), Utils.decodeError(error), Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), Utils.decodeError(error), Toast.LENGTH_SHORT).show();
             }
         };
 

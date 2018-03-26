@@ -49,7 +49,7 @@ public class FindFriends extends AppCompatActivity {
                     String userEmail = searchedUsers.getJSONObject(position).getString("email");
                     requestUser(userEmail);
                 } catch (JSONException e) {
-                    Toast.makeText(getApplicationContext(),"Bad Request",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(),"Bad Response", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -86,13 +86,13 @@ public class FindFriends extends AppCompatActivity {
 
                     adapter.notifyDataSetChanged();
                 } catch (JSONException e) {
-                    Toast.makeText(getApplicationContext(),"Bad Response",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(),"Bad Response", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(VolleyError error) {
-                Toast.makeText(getApplicationContext(),"Failed to get searched users",Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),Utils.decodeError(error), Toast.LENGTH_SHORT).show();
             }
         };
 
@@ -107,12 +107,12 @@ public class FindFriends extends AppCompatActivity {
         Utils.VolleyCallback callback = new Utils.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
-                Toast.makeText(getApplicationContext(),"Successfully added user",Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),"Successfully added " + userEmail, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFailure(VolleyError error) {
-                Toast.makeText(getApplicationContext(), Utils.decodeError(error), Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), Utils.decodeError(error), Toast.LENGTH_SHORT).show();
             }
         };
 
