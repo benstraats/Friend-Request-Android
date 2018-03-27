@@ -77,30 +77,27 @@ public class PendingFriends extends AppCompatActivity {
             }
         };
 
-        String url = Utils.requestsURL + "?requestee=" + Utils.userName + "&$limit=50";
+        String url = Utils.requestsURL + "?requestee=" + Utils.userID + "&$limit=50";
 
         Utils.volleyRequest(getApplication(), url, Utils.getRequestsTAG,
                 Request.Method.GET, null, callback);
     }
 
     private void acceptRequest(int position) {
-        String targetUser;
         String requestID;
         try {
-            targetUser = requestedUsers.getJSONObject(position).getString("requester");
             requestID = requestedUsers.getJSONObject(position).getString("_id");
         } catch (JSONException e) {
             Toast.makeText(getApplicationContext(),"Failed to parse requested user",Toast.LENGTH_SHORT).show();
             return;
         }
 
-        final String finalTargetUser = targetUser;
         final String finalRequestID = requestID;
 
         Utils.VolleyCallback callback = new Utils.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
-                Toast.makeText(getApplicationContext(),"Successfully added " + finalTargetUser, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),"Successfully added user", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -111,7 +108,6 @@ public class PendingFriends extends AppCompatActivity {
 
         String url = Utils.friendsURL;
         final HashMap<String, String> body = new HashMap<>();
-        body.put("targetUser", finalTargetUser);
         body.put("requestID", finalRequestID);
 
         Utils.volleyRequest(getApplication(), url, Utils.acceptRequestTAG,

@@ -25,6 +25,8 @@ import java.util.Map;
 
 public class Utils {
 
+    protected static String userEmail;
+    protected static String userID;
     protected static String userName;
 
     //VOLLEY/HTTP call section

@@ -117,7 +117,7 @@ public class Landing extends AppCompatActivity {
                         String user1 = friendUsers.getJSONObject(i).getString("user1");
                         String user2 = friendUsers.getJSONObject(i).getString("user2");
 
-                        if (user1.equals(Utils.userName)) {
+                        if (user1.equals(Utils.userID)) {
                             users.add(user2);
                         } else {
                             users.add(user1);
