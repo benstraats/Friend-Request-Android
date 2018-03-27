@@ -19,6 +19,13 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.VolleyError;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 public class Landing extends AppCompatActivity {
@@ -27,6 +34,8 @@ public class Landing extends AppCompatActivity {
 
     private ArrayList<String> users = new ArrayList<String>();
     private ArrayAdapter<String> adapter;
+
+    private JSONArray friendUsers;
 
     private Button pendingFriendsButton;
     private Button addFriendsButton;
@@ -61,7 +70,7 @@ public class Landing extends AppCompatActivity {
         });
         fab.setImageResource(android.R.drawable.ic_menu_edit);
 
-        populateList();
+        getFriends();
 
         pendingFriendsButton = findViewById(R.id.PendingFriendsButton);
         addFriendsButton = findViewById(R.id.AddFriendsButton);
@@ -83,10 +92,53 @@ public class Landing extends AppCompatActivity {
         });
     }
 
-    private void populateList() {
-        for (int i=0; i<50; i++) {
-            users.add("Friend " + i);
-        }
-        adapter.notifyDataSetChanged();
+    @Override
+    public void onResume() {
+        super.onResume();
+        getFriends();
+    }
+
+    private void getFriends() {
+
+        Utils.VolleyCallback callback = new Utils.VolleyCallback() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                try {
+                    users.clear();
+
+                    int total = Integer.parseInt(response.getString("total"));
+                    int limit = Integer.parseInt(response.getString("limit"));
+
+                    int num = Math.min(total, limit);
+
+                    friendUsers = response.getJSONArray("data");
+
+                    for (int i=0; i<num; i++) {
+                        String user1 = friendUsers.getJSONObject(i).getString("user1");
+                        String user2 = friendUsers.getJSONObject(i).getString("user2");
+
+                        if (user1.equals(Utils.userName)) {
+                            users.add(user2);
+                        } else {
+                            users.add(user1);
+                        }
+                    }
+
+                    adapter.notifyDataSetChanged();
+                } catch (JSONException e) {
+                    Toast.makeText(getApplicationContext(), "Bad Response", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(VolleyError error) {
+                Toast.makeText(getApplicationContext(), Utils.decodeError(error), Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        String url = Utils.friendsURL + "?$limit=50";
+
+        Utils.volleyRequest(getApplication(), url, Utils.getFriendsTAG,
+                Request.Method.GET, null, callback);
     }
 }

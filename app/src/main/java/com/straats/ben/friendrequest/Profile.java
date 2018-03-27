@@ -20,7 +20,7 @@ public class Profile extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Saved your profile", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Saved your profile", Snackbar.LENGTH_SHORT)
                         .setAction("Action", null).show();
             }
         });
