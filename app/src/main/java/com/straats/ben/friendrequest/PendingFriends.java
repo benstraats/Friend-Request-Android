@@ -60,9 +60,10 @@ public class PendingFriends extends AppCompatActivity {
                     int num = Math.min(total, limit);
 
                     requestedUsers = response.getJSONArray("data");
+                    JSONObject userInfo = response.getJSONObject("userInfo");
 
                     for (int i=0; i<num; i++) {
-                        users.add(requestedUsers.getJSONObject(i).getString("requester"));
+                        users.add(Utils.getUserInfo(requestedUsers.getJSONObject(i).getString("requester"), userInfo));
                     }
 
                     adapter.notifyDataSetChanged();
@@ -77,7 +78,7 @@ public class PendingFriends extends AppCompatActivity {
             }
         };
 
-        String url = Utils.requestsURL + "?requestee=" + Utils.userID + "&$limit=50";
+        String url = Utils.requestsURL + "?requestee=" + Utils.userID + "&$limit=49";
 
         Utils.volleyRequest(getApplication(), url, Utils.getRequestsTAG,
                 Request.Method.GET, null, callback);

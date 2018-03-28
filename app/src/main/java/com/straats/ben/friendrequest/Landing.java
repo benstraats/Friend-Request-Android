@@ -70,8 +70,6 @@ public class Landing extends AppCompatActivity {
         });
         fab.setImageResource(android.R.drawable.ic_menu_edit);
 
-        getFriends();
-
         pendingFriendsButton = findViewById(R.id.PendingFriendsButton);
         addFriendsButton = findViewById(R.id.AddFriendsButton);
 
@@ -117,10 +115,12 @@ public class Landing extends AppCompatActivity {
                         String user1 = friendUsers.getJSONObject(i).getString("user1");
                         String user2 = friendUsers.getJSONObject(i).getString("user2");
 
+                        JSONObject userInfo = response.getJSONObject("userInfo");
+
                         if (user1.equals(Utils.userID)) {
-                            users.add(user2);
+                            users.add(Utils.getUserInfo(user2, userInfo));
                         } else {
-                            users.add(user1);
+                            users.add(Utils.getUserInfo(user1, userInfo));
                         }
                     }
 
@@ -136,7 +136,7 @@ public class Landing extends AppCompatActivity {
             }
         };
 
-        String url = Utils.friendsURL + "?$limit=50";
+        String url = Utils.friendsURL + "?$limit=49";
 
         Utils.volleyRequest(getApplication(), url, Utils.getFriendsTAG,
                 Request.Method.GET, null, callback);
