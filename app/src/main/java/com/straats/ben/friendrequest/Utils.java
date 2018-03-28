@@ -12,6 +12,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,6 +26,8 @@ import java.util.Map;
 
 public class Utils {
 
+    protected static String userEmail;
+    protected static String userID;
     protected static String userName;
 
     //VOLLEY/HTTP call section
@@ -105,6 +108,28 @@ public class Utils {
         } catch (JSONException e) {
             return "Generic Error";
         }
+    }
+
+    protected static String getUserInfo(String usersID, JSONObject users) {
+        try {
+            JSONObject data = users.getJSONObject("data");
+            int total = data.getInt("total");
+            int limit = data.getInt("limit");
+
+            JSONArray userData = data.getJSONArray("data");
+
+            int num = Math.min(total, limit);
+
+            for (int i=0; i<num; i++) {
+                if (userData.getJSONObject(i).getString("_id").equals(usersID)) {
+                    JSONObject correctUser = userData.getJSONObject(i);
+                    return correctUser.getString("name") + " (" + correctUser.getString("email") + ")";
+                }
+            }
+        } catch (JSONException e) {
+            return "Failed to parse user";
+        }
+        return "User data not found";
     }
 
 }

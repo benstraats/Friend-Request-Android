@@ -39,17 +39,18 @@ public class FindFriends extends AppCompatActivity {
         setContentView(R.layout.activity_find_friends);
 
         mainListView = findViewById(R.id.SearchList);
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, users);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, users);
         mainListView.setAdapter(adapter);
 
         mainListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 try {
-                    String userEmail = searchedUsers.getJSONObject(position).getString("email");
-                    requestUser(userEmail);
+                    String userID = searchedUsers.getJSONObject(position).getString("_id");
+                    requestUser(userID);
                 } catch (JSONException e) {
-                    Toast.makeText(getApplicationContext(),"Bad Response", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"Bad Response", Toast.LENGTH_SHORT)
+                            .show();
                 }
             }
         });
@@ -81,18 +82,21 @@ public class FindFriends extends AppCompatActivity {
                     searchedUsers = response.getJSONArray("data");
 
                     for (int i=0; i<num; i++) {
-                        users.add(searchedUsers.getJSONObject(i).getString("name") + " (" + searchedUsers.getJSONObject(i).getString("email") + ")");
+                        users.add(searchedUsers.getJSONObject(i).getString("name") + " (" +
+                                searchedUsers.getJSONObject(i).getString("email") + ")");
                     }
 
                     adapter.notifyDataSetChanged();
                 } catch (JSONException e) {
-                    Toast.makeText(getApplicationContext(),"Bad Response", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"Bad Response", Toast.LENGTH_SHORT)
+                            .show();
                 }
             }
 
             @Override
             public void onFailure(VolleyError error) {
-                Toast.makeText(getApplicationContext(),Utils.decodeError(error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),Utils.decodeError(error), Toast.LENGTH_SHORT)
+                        .show();
             }
         };
 
@@ -102,23 +106,25 @@ public class FindFriends extends AppCompatActivity {
                 Request.Method.GET, null, callback);
     }
 
-    private void requestUser(final String userEmail) {
+    private void requestUser(final String userID) {
 
         Utils.VolleyCallback callback = new Utils.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
-                Toast.makeText(getApplicationContext(),"Successfully added " + userEmail, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),"Successfully added " + userID,
+                        Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFailure(VolleyError error) {
-                Toast.makeText(getApplicationContext(), Utils.decodeError(error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), Utils.decodeError(error),
+                        Toast.LENGTH_SHORT).show();
             }
         };
 
         String url = Utils.requestsURL;
         final HashMap<String, String> body = new HashMap<>();
-        body.put("requestee", userEmail);
+        body.put("requesteeID", userID);
 
         Utils.volleyRequest(getApplication(), url, Utils.requestUserTAG,
                 Request.Method.POST, body, callback);

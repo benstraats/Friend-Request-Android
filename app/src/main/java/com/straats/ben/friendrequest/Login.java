@@ -48,9 +48,12 @@ public class Login extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (isSignUp) {
-                    signMeUp(usernameTextBox.getText().toString(), nameTextBox.getText().toString(), passwordTextBox.getText().toString(), confirmPasswordTextBox.getText().toString());
+                    signMeUp(usernameTextBox.getText().toString(), nameTextBox.getText().toString(),
+                            passwordTextBox.getText().toString(), confirmPasswordTextBox.getText()
+                                    .toString());
                 } else {
-                    logMeIn(usernameTextBox.getText().toString(), passwordTextBox.getText().toString());
+                    logMeIn(usernameTextBox.getText().toString(), passwordTextBox.getText()
+                            .toString());
                 }
             }
         });
@@ -87,17 +90,20 @@ public class Login extends AppCompatActivity {
             public void onSuccess(JSONObject response) {
                 try {
                     Utils.accessToken = response.getString("accessToken");
-                    Utils.userName = username;
+                    Utils.userEmail = username;
+                    getCurrentUserInfo(username);
                     Intent intent = new Intent(getApplicationContext(), Landing.class);
                     startActivity(intent);
                 } catch (JSONException e) {
-                    Toast.makeText(getApplicationContext(),"Bad Response",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"Bad Response",Toast.LENGTH_SHORT)
+                            .show();
                 }
             }
 
             @Override
             public void onFailure(VolleyError error) {
-                Toast.makeText(getApplicationContext(), Utils.decodeError(error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), Utils.decodeError(error),
+                        Toast.LENGTH_SHORT).show();
             }
         };
 
@@ -105,27 +111,34 @@ public class Login extends AppCompatActivity {
                 Request.Method.POST, loginBody, callback);
     }
 
-    private void signMeUp(final String username, String name, final String password, String repeatUsername) {
+    private void signMeUp(final String username, String name, final String password,
+                          String repeatUsername) {
         if (username.length() < 3) {
-            Toast.makeText(getApplicationContext(),"Username too short", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),"Username too short", Toast.LENGTH_SHORT)
+                    .show();
         }
         else if (username.length() > 30) {
-            Toast.makeText(getApplicationContext(), "Username too long", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Username too long", Toast.LENGTH_SHORT)
+                    .show();
         }
         else if (name.length() < 3) {
             Toast.makeText(getApplicationContext(),"Name too short",Toast.LENGTH_SHORT).show();
         }
         else if (name.length() > 100) {
-            Toast.makeText(getApplicationContext(), "Name too long", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Name too long", Toast.LENGTH_SHORT)
+                    .show();
         }
         else if (password.length() < 6) {
-            Toast.makeText(getApplicationContext(),"Password too short",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),"Password too short",Toast.LENGTH_SHORT)
+                    .show();
         }
         else if (password.length() > 50) {
-            Toast.makeText(getApplicationContext(),"Password too long",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),"Password too long",Toast.LENGTH_SHORT)
+                    .show();
         }
         else if (!password.equals(repeatUsername)) {
-            Toast.makeText(getApplicationContext(),"Passwords don\'t match",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),"Passwords don\'t match",Toast.LENGTH_SHORT)
+                    .show();
         }
         else {
 
@@ -142,7 +155,8 @@ public class Login extends AppCompatActivity {
 
                 @Override
                 public void onFailure(VolleyError error) {
-                    Toast.makeText(getApplicationContext(), Utils.decodeError(error), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), Utils.decodeError(error),
+                            Toast.LENGTH_SHORT).show();
                 }
             };
 
@@ -150,5 +164,34 @@ public class Login extends AppCompatActivity {
                     Request.Method.POST, loginBody, callback);
 
         }
+    }
+
+    private void getCurrentUserInfo(final String userEmail) {
+
+        Utils.VolleyCallback callback = new Utils.VolleyCallback() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                try {
+                    Utils.userID = response.getJSONArray("data").getJSONObject(0)
+                            .getString("_id");
+                    Utils.userName = response.getJSONArray("data").getJSONObject(0)
+                            .getString("name");
+                } catch (JSONException e) {
+                    Toast.makeText(getApplicationContext(),"Bad Response", Toast.LENGTH_SHORT)
+                            .show();
+                }
+            }
+
+            @Override
+            public void onFailure(VolleyError error) {
+                Toast.makeText(getApplicationContext(), Utils.decodeError(error),
+                        Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        String url = Utils.usersURL + "?email=" + userEmail;
+
+        Utils.volleyRequest(getApplication(), url, Utils.searchUsersTAG,
+                Request.Method.GET, null, callback);
     }
 }
