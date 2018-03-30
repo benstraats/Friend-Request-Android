@@ -7,6 +7,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.VolleyError;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class ViewProfile extends AppCompatActivity {
 
@@ -32,14 +40,44 @@ public class ViewProfile extends AppCompatActivity {
 
         profileText = findViewById(R.id.profileText);
 
-        fillProfile();
+        String friendID = getIntent().getExtras().getString("friendID");
+
+        getProfile(friendID);
     }
 
-    private void fillProfile() {
-        String text = "Instagram: @user\n" +
-                "Twitter: @Usseerr\n" +
-                "Youtube: Sick Gamer 22\n" +
-                "Linkedin: @sadfff";
-        profileText.setText(text);
+    private void getProfile(final String friendID) {
+        Utils.VolleyCallback callback = new Utils.VolleyCallback() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                try {
+                    String text = "";
+
+                    JSONArray profile = response.getJSONArray("data").getJSONObject(0)
+                            .getJSONArray("profile");
+
+                    //This assumes rows are in order
+                    for (int i=0; i<profile.length(); i++) {
+                        String key = profile.getJSONObject(i).getString("key");
+                        String value = profile.getJSONObject(i).getString("value");
+                        text = text + key + ": " + value + "\n";
+                    }
+
+                    profileText.setText(text);
+
+                } catch (JSONException e) {
+                    Toast.makeText(getApplicationContext(), "Bad Response", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(VolleyError error) {
+                Toast.makeText(getApplicationContext(), Utils.decodeError(error), Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        String url = Utils.profileURL + "?userID=" + friendID;
+
+        Utils.volleyRequest(getApplication(), url, Utils.viewProfileTAG,
+                Request.Method.GET, null, callback);
     }
 }
