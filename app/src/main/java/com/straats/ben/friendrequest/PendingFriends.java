@@ -108,8 +108,14 @@ public class PendingFriends extends AppCompatActivity {
         };
 
         String url = Utils.friendsURL;
-        final HashMap<String, String> body = new HashMap<>();
-        body.put("requestID", finalRequestID);
+        JSONObject body = new JSONObject();
+        try {
+            body.put("requestID", finalRequestID);
+        } catch (JSONException e) {
+            Toast.makeText(getApplicationContext(), "Failed to sign up",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         Utils.volleyRequest(getApplication(), url, Utils.acceptRequestTAG,
                 Request.Method.POST, body, callback);

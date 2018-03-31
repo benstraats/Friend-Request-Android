@@ -123,8 +123,15 @@ public class FindFriends extends AppCompatActivity {
         };
 
         String url = Utils.requestsURL;
-        final HashMap<String, String> body = new HashMap<>();
-        body.put("requesteeID", userID);
+
+        JSONObject body = new JSONObject();
+        try {
+            body.put("requesteeID", userID);
+        } catch (JSONException e) {
+            Toast.makeText(getApplicationContext(), "Failed to request user",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         Utils.volleyRequest(getApplication(), url, Utils.requestUserTAG,
                 Request.Method.POST, body, callback);

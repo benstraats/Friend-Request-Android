@@ -132,7 +132,7 @@ public class Profile extends AppCompatActivity {
             method = Request.Method.PUT;
         }
 
-        Utils.jsonVolleyRequest(getApplication(), url, Utils.saveProfileTAG, method,
+        Utils.volleyRequest(getApplication(), url, Utils.saveProfileTAG, method,
                 getProfileJSON(), callback);
     }
 

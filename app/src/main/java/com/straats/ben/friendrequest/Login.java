@@ -80,11 +80,6 @@ public class Login extends AppCompatActivity {
 
     private void logMeIn(final String username, final String password) {
 
-        HashMap<String, String> loginBody = new HashMap<>();
-        loginBody.put("strategy", "local");
-        loginBody.put("email", username);
-        loginBody.put("password", password);
-
         Utils.VolleyCallback callback = new Utils.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
@@ -107,8 +102,19 @@ public class Login extends AppCompatActivity {
             }
         };
 
+        JSONObject body = new JSONObject();
+        try {
+            body.put("strategy", "local");
+            body.put("email", username);
+            body.put("password", password);
+        } catch (JSONException e) {
+            Toast.makeText(getApplicationContext(), "Failed to log user in",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         Utils.volleyRequest(getApplication(), Utils.authenticationURL, Utils.loginTAG,
-                Request.Method.POST, loginBody, callback);
+                Request.Method.POST, body, callback);
     }
 
     private void signMeUp(final String username, String name, final String password,
@@ -142,10 +148,16 @@ public class Login extends AppCompatActivity {
         }
         else {
 
-            HashMap<String, String> loginBody = new HashMap<>();
-            loginBody.put("email", username);
-            loginBody.put("name", name);
-            loginBody.put("password", password);
+            JSONObject body = new JSONObject();
+            try {
+                body.put("email", username);
+                body.put("name", name);
+                body.put("password", password);
+            } catch (JSONException e) {
+                Toast.makeText(getApplicationContext(), "Failed to sign up",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             Utils.VolleyCallback callback = new Utils.VolleyCallback() {
                 @Override
@@ -161,7 +173,7 @@ public class Login extends AppCompatActivity {
             };
 
             Utils.volleyRequest(getApplication(), Utils.usersURL, Utils.signUpTAG,
-                    Request.Method.POST, loginBody, callback);
+                    Request.Method.POST, body, callback);
 
         }
     }

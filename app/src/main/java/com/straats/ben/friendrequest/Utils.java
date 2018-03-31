@@ -50,49 +50,7 @@ public class Utils {
     protected static final String viewProfileTAG = "View Profile";
     protected static final String saveProfileTAG = "Save Profile";
 
-    protected static void volleyRequest(final Context c, final String url, final String tag, int requestMethod, final HashMap<String, String> body, final VolleyCallback callback) {
-        RequestQueue queue = Volley.newRequestQueue(c);//maybe make singleton?
-
-        final HashMap<String, String> headers = new HashMap<>();
-        headers.put("Accept", "application/json");
-        headers.put("Content-Type", "application/json");
-
-        if (!(tag.equals(signUpTAG) || tag.equals(loginTAG))) {
-            headers.put("Authorization", "Bearer " + accessToken);
-        }
-
-        JSONObject jsonBody = null;
-
-        if (body != null) {
-            jsonBody = new JSONObject(body);
-        }
-
-        JsonObjectRequest jsonObjReq = new JsonObjectRequest(requestMethod, url, jsonBody,
-                new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        callback.onSuccess(response);
-                    }
-                }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                callback.onFailure(error);
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                return headers;
-            }
-        };
-
-        jsonObjReq.setTag(tag);
-        // Adding request to request queue
-        queue.add(jsonObjReq);
-    }
-
-    protected static void jsonVolleyRequest(final Context c, final String url, final String tag, int requestMethod, final JSONObject body, final VolleyCallback callback) {
+    protected static void volleyRequest(final Context c, final String url, final String tag, int requestMethod, final JSONObject body, final VolleyCallback callback) {
         RequestQueue queue = Volley.newRequestQueue(c);//maybe make singleton?
 
         final HashMap<String, String> headers = new HashMap<>();
