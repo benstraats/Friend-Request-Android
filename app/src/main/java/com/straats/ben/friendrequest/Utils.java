@@ -92,6 +92,42 @@ public class Utils {
         queue.add(jsonObjReq);
     }
 
+    protected static void jsonVolleyRequest(final Context c, final String url, final String tag, int requestMethod, final JSONObject body, final VolleyCallback callback) {
+        RequestQueue queue = Volley.newRequestQueue(c);//maybe make singleton?
+
+        final HashMap<String, String> headers = new HashMap<>();
+        headers.put("Accept", "application/json");
+        headers.put("Content-Type", "application/json");
+
+        if (!(tag.equals(signUpTAG) || tag.equals(loginTAG))) {
+            headers.put("Authorization", "Bearer " + accessToken);
+        }
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(requestMethod, url, body,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        callback.onSuccess(response);
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                callback.onFailure(error);
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return headers;
+            }
+        };
+
+        jsonObjReq.setTag(tag);
+        // Adding request to request queue
+        queue.add(jsonObjReq);
+    }
+
     protected interface VolleyCallback {
         void onSuccess(JSONObject response);
         void onFailure(VolleyError error);

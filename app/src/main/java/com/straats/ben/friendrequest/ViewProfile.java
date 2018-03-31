@@ -65,7 +65,7 @@ public class ViewProfile extends AppCompatActivity {
                     profileText.setText(text);
 
                 } catch (JSONException e) {
-                    Toast.makeText(getApplicationContext(), "Bad Response", Toast.LENGTH_SHORT).show();
+                    profileText.setText("User doesn\'t have a profile");
                 }
             }
 
