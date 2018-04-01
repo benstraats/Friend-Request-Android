@@ -52,8 +52,24 @@ public class Landing extends AppCompatActivity {
         mainListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getApplicationContext(), ViewProfile.class);
-                startActivity(intent);
+
+                try {
+
+                    String user1 = friendUsers.getJSONObject(position).getString("user1");
+                    String user2 = friendUsers.getJSONObject(position).getString("user2");
+
+                    String friendID = user1;
+
+                    if (user1.equals(Utils.userID)) {
+                        friendID = user2;
+                    }
+
+                    Intent intent = new Intent(getApplicationContext(), ViewProfile.class);
+                    intent.putExtra("friendID", friendID);
+                    startActivity(intent);
+                } catch (JSONException e) {
+                    //bad friend yo
+                }
             }
         });
 

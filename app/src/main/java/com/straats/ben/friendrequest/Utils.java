@@ -50,7 +50,7 @@ public class Utils {
     protected static final String viewProfileTAG = "View Profile";
     protected static final String saveProfileTAG = "Save Profile";
 
-    protected static void volleyRequest(final Context c, final String url, final String tag, int requestMethod, final HashMap<String, String> body, final VolleyCallback callback) {
+    protected static void volleyRequest(final Context c, final String url, final String tag, int requestMethod, final JSONObject body, final VolleyCallback callback) {
         RequestQueue queue = Volley.newRequestQueue(c);//maybe make singleton?
 
         final HashMap<String, String> headers = new HashMap<>();
@@ -61,13 +61,7 @@ public class Utils {
             headers.put("Authorization", "Bearer " + accessToken);
         }
 
-        JSONObject jsonBody = null;
-
-        if (body != null) {
-            jsonBody = new JSONObject(body);
-        }
-
-        JsonObjectRequest jsonObjReq = new JsonObjectRequest(requestMethod, url, jsonBody,
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(requestMethod, url, body,
                 new Response.Listener<JSONObject>() {
 
                     @Override
