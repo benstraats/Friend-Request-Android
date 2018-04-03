@@ -8,49 +8,35 @@
     tools:context="com.straats.ben.friendrequest.Profile"
     tools:showIn="@layout/activity_profile">
 
-    <TableLayout
-        android:id="@+id/profileTable"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <TableRow
-            android:id="@+id/firstRow"
+        <TableLayout
+            android:id="@+id/profileTable"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0">
 
-            <EditText
-                android:id="@+id/keyText"
-                android:layout_width="189dp"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="Social Media"
-                android:inputType="textPersonName" />
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#FFFFFF"
+                android:layout_margin="1dp">
 
-            <EditText
-                android:id="@+id/valueText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="@Handle"
-                android:inputType="textPersonName" />
-        </TableRow>
+                <Button
+                    android:id="@+id/addRowButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Add Row" />
+            </TableRow>
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+        </TableLayout>
+    </ScrollView>
 
-            <Button
-                android:id="@+id/addRowButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Add Row" />
-        </TableRow>
-
-    </TableLayout>
 </android.support.constraint.ConstraintLayout>

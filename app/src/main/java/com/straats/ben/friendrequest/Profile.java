@@ -1,13 +1,17 @@
 package com.straats.ben.friendrequest;
 
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.Toast;
@@ -26,8 +30,6 @@ public class Profile extends AppCompatActivity {
     Button addRowButton;
     TableLayout mainTable;
     TableRow firstRow;
-    EditText firstRowKey;
-    EditText firstRowValue;
 
     boolean creatingProfile = true;
     String profileID = "";
@@ -51,9 +53,6 @@ public class Profile extends AppCompatActivity {
 
         addRowButton = findViewById(R.id.addRowButton);
         mainTable = findViewById(R.id.profileTable);
-        firstRow = findViewById(R.id.firstRow);
-        firstRowKey = findViewById(R.id.keyText);
-        firstRowValue = findViewById(R.id.valueText);
 
         addRowButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,11 +77,7 @@ public class Profile extends AppCompatActivity {
                         String key = profile.getJSONObject(i).getString("key");
                         String value = profile.getJSONObject(i).getString("value");
 
-                        if (i == 0) {
-                            setRow(0, key, value);
-                        } else {
-                            addRow(key, value);
-                        }
+                        addRow(key, value);
                     }
 
                     creatingProfile = false;
@@ -137,37 +132,43 @@ public class Profile extends AppCompatActivity {
     }
 
     private void addRow(String key, String value) {
-        TableRow newRow = new TableRow(getApplicationContext());
 
-        EditText keyBox = new EditText(getApplicationContext());
-        EditText valueBox = new EditText(getApplicationContext());
+        TableRow row = (TableRow) LayoutInflater.from(this).inflate(R.layout.profile_row, null);
 
-        keyBox.setHint("Social Media");
-        valueBox.setHint("@Handle");
+        ConstraintLayout cl = (ConstraintLayout) row.getChildAt(0);
+        LinearLayout ll = (LinearLayout) cl.getChildAt(0);
 
-        keyBox.setText(key);
-        valueBox.setText(value);
+        EditText keyText = (EditText) ll.getChildAt(0);
+        EditText valueText = (EditText) ll.getChildAt(1);
 
-        newRow.setLayoutParams(firstRow.getLayoutParams());
-        keyBox.setLayoutParams(firstRowKey.getLayoutParams());
-        valueBox.setLayoutParams(firstRowValue.getLayoutParams());
+        keyText.setText(key);
+        valueText.setText(value);
 
-        newRow.addView(keyBox);
-        newRow.addView(valueBox);
+        Button deleteRow = (Button) cl.getChildAt(1);
 
         int numRows = mainTable.getChildCount();
 
-        //Insert into second last row
-        mainTable.addView(newRow, numRows-1);
+        deleteRow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                View newV = (View) v.getParent().getParent();
+                mainTable.removeView(newV);
+            }
+        });
+
+        mainTable.addView(row, numRows-1);
     }
 
     private void setRow(int rowIndex, String key, String value) {
         TableRow row = (TableRow) mainTable.getChildAt(rowIndex);
 
-        EditText keyText = (EditText) row.getChildAt(0);
+        ConstraintLayout cl = (ConstraintLayout) row.getChildAt(0);
+        LinearLayout ll = (LinearLayout) cl.getChildAt(0);
+
+        EditText keyText = (EditText) ll.getChildAt(0);
         keyText.setText(key);
 
-        EditText valueText = (EditText) row.getChildAt(1);
+        EditText valueText = (EditText) ll.getChildAt(1);
         valueText.setText(value);
     }
 
@@ -177,10 +178,13 @@ public class Profile extends AppCompatActivity {
         for (int i=0; i<mainTable.getChildCount()-1; i++) {
             TableRow row = (TableRow) mainTable.getChildAt(i);
 
-            EditText keyText = (EditText) row.getChildAt(0);
+            ConstraintLayout cl = (ConstraintLayout) row.getChildAt(0);
+            LinearLayout ll = (LinearLayout) cl.getChildAt(0);
+
+            EditText keyText = (EditText) ll.getChildAt(0);
             String keyString = keyText.getText().toString();
 
-            EditText valueText = (EditText) row.getChildAt(1);
+            EditText valueText = (EditText) ll.getChildAt(1);
             String valueString = valueText.getText().toString();
             try {
                 if (i==0) {
