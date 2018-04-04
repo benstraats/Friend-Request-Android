@@ -6,6 +6,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,7 +19,8 @@ import org.json.JSONObject;
 
 public class ViewProfile extends AppCompatActivity {
 
-    TextView profileText;
+    private TextView profileText;
+    private ProgressBar loadingBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +41,7 @@ public class ViewProfile extends AppCompatActivity {
         fab.setVisibility(View.INVISIBLE);
 
         profileText = findViewById(R.id.profileText);
+        loadingBar = findViewById(R.id.loadingBar);
 
         String friendID = getIntent().getExtras().getString("friendID");
 
@@ -49,6 +52,7 @@ public class ViewProfile extends AppCompatActivity {
         Utils.VolleyCallback callback = new Utils.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
+                hideLoading();
                 try {
                     String text = "";
 
@@ -71,13 +75,23 @@ public class ViewProfile extends AppCompatActivity {
 
             @Override
             public void onFailure(VolleyError error) {
+                hideLoading();
                 Toast.makeText(getApplicationContext(), Utils.decodeError(error), Toast.LENGTH_SHORT).show();
             }
         };
 
         String url = Utils.profileURL + "?userID=" + friendID;
 
+        showLoading();
         Utils.volleyRequest(getApplication(), url, Utils.viewProfileTAG,
                 Request.Method.GET, null, callback);
+    }
+
+    private void showLoading() {
+        loadingBar.setVisibility(View.VISIBLE);
+    }
+
+    private void hideLoading() {
+        loadingBar.setVisibility(View.INVISIBLE);
     }
 }
