@@ -15,6 +15,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.Toast;
@@ -33,6 +34,8 @@ public class Profile extends AppCompatActivity {
     Button addRowButton;
     TableLayout mainTable;
     TableRow firstRow;
+    ProgressBar loadingBar;
+    FloatingActionButton fab;
 
     boolean creatingProfile = true;
     String profileID = "";
@@ -44,7 +47,7 @@ public class Profile extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
+        fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -56,6 +59,7 @@ public class Profile extends AppCompatActivity {
 
         addRowButton = findViewById(R.id.addRowButton);
         mainTable = findViewById(R.id.profileTable);
+        loadingBar = findViewById(R.id.loadingBar);
 
         addRowButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,6 +75,7 @@ public class Profile extends AppCompatActivity {
         Utils.VolleyCallback callback = new Utils.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
+                hideLoading();
                 try {
                     JSONArray data = response.getJSONArray("data");
                     JSONArray profile = data.getJSONObject(0).getJSONArray("profile");
@@ -94,6 +99,7 @@ public class Profile extends AppCompatActivity {
 
             @Override
             public void onFailure(VolleyError error) {
+                hideLoading();
                 Toast.makeText(getApplicationContext(), Utils.decodeError(error),
                         Toast.LENGTH_SHORT).show();
             }
@@ -101,6 +107,7 @@ public class Profile extends AppCompatActivity {
 
         String url = Utils.profileURL + "?userID=" + currUserID;
 
+        showLoading();
         Utils.volleyRequest(getApplication(), url, Utils.viewProfileTAG,
                 Request.Method.GET, null, callback);
     }
@@ -110,7 +117,7 @@ public class Profile extends AppCompatActivity {
         Utils.VolleyCallback callback = new Utils.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
-
+                hideLoading();
                 //get the profile id
                 try {
                     profileID = response.getString("_id");
@@ -127,6 +134,7 @@ public class Profile extends AppCompatActivity {
 
             @Override
             public void onFailure(VolleyError error) {
+                hideLoading();
                 Toast.makeText(getApplicationContext(), Utils.decodeError(error),
                         Toast.LENGTH_SHORT).show();
             }
@@ -140,6 +148,7 @@ public class Profile extends AppCompatActivity {
             method = Request.Method.PUT;
         }
 
+        showLoading();
         Utils.volleyRequest(getApplication(), url, Utils.saveProfileTAG, method,
                 getProfileJSON(), callback);
     }
@@ -241,5 +250,15 @@ public class Profile extends AppCompatActivity {
             }
         }
         return body;
+    }
+
+    private void showLoading() {
+        loadingBar.setVisibility(View.VISIBLE);
+        fab.setVisibility(View.INVISIBLE);
+    }
+
+    private void hideLoading() {
+        loadingBar.setVisibility(View.INVISIBLE);
+        fab.setVisibility(View.VISIBLE);
     }
 }
