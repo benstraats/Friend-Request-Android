@@ -110,9 +110,19 @@ public class Profile extends AppCompatActivity {
         Utils.VolleyCallback callback = new Utils.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
-                creatingProfile = false;
-                Snackbar.make(v, "Saved your profile", Snackbar.LENGTH_SHORT)
-                        .setAction("Action", null).show();
+
+                //get the profile id
+                try {
+                    profileID = response.getString("_id");
+
+                    Snackbar.make(v, "Saved your profile", Snackbar.LENGTH_SHORT)
+                            .setAction("Action", null).show();
+
+                    creatingProfile = false;
+                } catch (JSONException e) {
+                    Toast.makeText(getApplicationContext(), "Failed to save profile",
+                            Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
