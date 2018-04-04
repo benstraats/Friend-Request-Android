@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -32,6 +33,7 @@ public class FindFriends extends AppCompatActivity {
 
     private Button searchButton;
     private EditText searchText;
+    private ProgressBar searchLoadingBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +59,8 @@ public class FindFriends extends AppCompatActivity {
 
         searchButton = findViewById(R.id.SearchButton);
         searchText = findViewById(R.id.SearchEditText);
+        searchLoadingBar = findViewById(R.id.searchLoadingBar);
+        hideSearchLoading();
 
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,6 +75,7 @@ public class FindFriends extends AppCompatActivity {
         Utils.VolleyCallback callback = new Utils.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
+                hideSearchLoading();
                 try {
                     users.clear();
 
@@ -97,11 +102,13 @@ public class FindFriends extends AppCompatActivity {
             public void onFailure(VolleyError error) {
                 Toast.makeText(getApplicationContext(),Utils.decodeError(error), Toast.LENGTH_SHORT)
                         .show();
+                hideSearchLoading();
             }
         };
 
         String url = Utils.usersURL + "?$search=" + search + "&$limit=50";
 
+        showSearchLoading();
         Utils.volleyRequest(getApplication(), url, Utils.searchUsersTAG,
                 Request.Method.GET, null, callback);
     }
@@ -135,5 +142,15 @@ public class FindFriends extends AppCompatActivity {
 
         Utils.volleyRequest(getApplication(), url, Utils.requestUserTAG,
                 Request.Method.POST, body, callback);
+    }
+
+    private void showSearchLoading() {
+        searchLoadingBar.setVisibility(View.VISIBLE);
+        searchButton.setVisibility(View.INVISIBLE);
+    }
+
+    private void hideSearchLoading() {
+        searchLoadingBar.setVisibility(View.INVISIBLE);
+        searchButton.setVisibility(View.VISIBLE);
     }
 }
