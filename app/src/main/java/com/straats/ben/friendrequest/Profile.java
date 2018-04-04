@@ -9,8 +9,11 @@ import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -140,6 +143,7 @@ public class Profile extends AppCompatActivity {
 
         EditText keyText = (EditText) ll.getChildAt(0);
         EditText valueText = (EditText) ll.getChildAt(1);
+        ImageButton editRowButton = (ImageButton) ll.getChildAt(2);
 
         keyText.setText(key);
         valueText.setText(value);
@@ -153,6 +157,24 @@ public class Profile extends AppCompatActivity {
             public void onClick(View v) {
                 View newV = (View) v.getParent().getParent();
                 mainTable.removeView(newV);
+            }
+        });
+
+        editRowButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ConstraintLayout cl = (ConstraintLayout) v.getParent().getParent();
+
+                Button deleteButton = (Button) cl.getChildAt(1);
+                CheckBox publicCheckbox = (CheckBox) cl.getChildAt(2);
+
+                if (deleteButton.getVisibility() == View.VISIBLE) {
+                    deleteButton.setVisibility(View.GONE);
+                    publicCheckbox.setVisibility(View.GONE);
+                } else {
+                    deleteButton.setVisibility(View.VISIBLE);
+                    publicCheckbox.setVisibility(View.VISIBLE);
+                }
             }
         });
 
