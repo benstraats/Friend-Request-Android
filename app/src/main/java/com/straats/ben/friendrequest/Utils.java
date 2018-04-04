@@ -1,6 +1,8 @@
 package com.straats.ben.friendrequest;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -51,6 +53,12 @@ public class Utils {
     protected static final String saveProfileTAG = "Save Profile";
 
     protected static void volleyRequest(final Context c, final String url, final String tag, int requestMethod, final JSONObject body, final VolleyCallback callback) {
+
+        if (!isNetworkAvailable(c)) {
+            Toast.makeText(c, "No Internet Connection", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         RequestQueue queue = Volley.newRequestQueue(c);//maybe make singleton?
 
         final HashMap<String, String> headers = new HashMap<>();
@@ -91,9 +99,20 @@ public class Utils {
         void onFailure(VolleyError error);
     }
 
+    private static boolean isNetworkAvailable(Context c) {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
     protected static String accessToken = null;
 
     protected static String decodeError(VolleyError error) {
+        if (error.networkResponse == null) {
+            return "Server may be down or internet connection lost";
+        }
+
         try {
             JSONObject body = new JSONObject(new String(error.networkResponse.data,"UTF-8"));
             return body.getString("message");
