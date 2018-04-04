@@ -94,4 +94,15 @@
         app:layout_constraintStart_toStartOf="@+id/UsernameTextBox"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
+    <ProgressBar
+        android:id="@+id/loginLoading"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/LoginButton"
+        app:layout_constraintEnd_toEndOf="@+id/LoginButton"
+        app:layout_constraintStart_toStartOf="@+id/LoginButton"
+        app:layout_constraintTop_toTopOf="@+id/LoginButton" />
+
 </android.support.constraint.ConstraintLayout>

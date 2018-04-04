@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -24,6 +25,7 @@ public class Login extends AppCompatActivity {
     private EditText usernameTextBox;
     private EditText passwordTextBox;
     private EditText confirmPasswordTextBox;
+    private ProgressBar loginLoading;
 
     private boolean isSignUp;
 
@@ -40,6 +42,7 @@ public class Login extends AppCompatActivity {
         usernameTextBox = findViewById(R.id.UsernameTextBox);
         passwordTextBox = findViewById(R.id.PasswordTextBox);
         confirmPasswordTextBox = findViewById(R.id.ConfirmPasswordTextBox);
+        loginLoading = findViewById(R.id.loginLoading);
 
         confirmPasswordTextBox.setVisibility(View.INVISIBLE);
         nameTextBox.setVisibility(View.INVISIBLE);
@@ -79,7 +82,7 @@ public class Login extends AppCompatActivity {
     }
 
     private void logMeIn(final String username, final String password) {
-
+        showLoading();
         Utils.VolleyCallback callback = new Utils.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
@@ -92,6 +95,7 @@ public class Login extends AppCompatActivity {
                 } catch (JSONException e) {
                     Toast.makeText(getApplicationContext(),"Bad Response",Toast.LENGTH_SHORT)
                             .show();
+                    stopLoading();
                 }
             }
 
@@ -99,6 +103,7 @@ public class Login extends AppCompatActivity {
             public void onFailure(VolleyError error) {
                 Toast.makeText(getApplicationContext(), Utils.decodeError(error),
                         Toast.LENGTH_SHORT).show();
+                stopLoading();
             }
         };
 
@@ -110,6 +115,7 @@ public class Login extends AppCompatActivity {
         } catch (JSONException e) {
             Toast.makeText(getApplicationContext(), "Failed to log user in",
                     Toast.LENGTH_SHORT).show();
+            stopLoading();
             return;
         }
 
@@ -147,6 +153,7 @@ public class Login extends AppCompatActivity {
                     .show();
         }
         else {
+            showLoading();
 
             JSONObject body = new JSONObject();
             try {
@@ -156,6 +163,7 @@ public class Login extends AppCompatActivity {
             } catch (JSONException e) {
                 Toast.makeText(getApplicationContext(), "Failed to sign up",
                         Toast.LENGTH_SHORT).show();
+                stopLoading();
                 return;
             }
 
@@ -169,6 +177,7 @@ public class Login extends AppCompatActivity {
                 public void onFailure(VolleyError error) {
                     Toast.makeText(getApplicationContext(), Utils.decodeError(error),
                             Toast.LENGTH_SHORT).show();
+                    stopLoading();
                 }
             };
 
@@ -191,6 +200,7 @@ public class Login extends AppCompatActivity {
                 } catch (JSONException e) {
                     Toast.makeText(getApplicationContext(),"Bad Response", Toast.LENGTH_SHORT)
                             .show();
+                    stopLoading();
                 }
             }
 
@@ -198,6 +208,7 @@ public class Login extends AppCompatActivity {
             public void onFailure(VolleyError error) {
                 Toast.makeText(getApplicationContext(), Utils.decodeError(error),
                         Toast.LENGTH_SHORT).show();
+                stopLoading();
             }
         };
 
@@ -205,5 +216,17 @@ public class Login extends AppCompatActivity {
 
         Utils.volleyRequest(getApplication(), url, Utils.searchUsersTAG,
                 Request.Method.GET, null, callback);
+    }
+
+    private void showLoading() {
+        loginLoading.setVisibility(View.VISIBLE);
+        loginButton.setVisibility(View.INVISIBLE);
+        signUpButton.setVisibility(View.INVISIBLE);
+    }
+
+    private void stopLoading() {
+        loginLoading.setVisibility(View.INVISIBLE);
+        loginButton.setVisibility(View.VISIBLE);
+        signUpButton.setVisibility(View.VISIBLE);
     }
 }
