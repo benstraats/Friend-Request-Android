@@ -82,7 +82,7 @@ public class Login extends AppCompatActivity {
     }
 
     private void logMeIn(final String username, final String password) {
-        showLoading();
+
         Utils.VolleyCallback callback = new Utils.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
@@ -95,15 +95,15 @@ public class Login extends AppCompatActivity {
                 } catch (JSONException e) {
                     Toast.makeText(getApplicationContext(),"Bad Response",Toast.LENGTH_SHORT)
                             .show();
-                    stopLoading();
+                    hideLoading();
                 }
             }
 
             @Override
             public void onFailure(VolleyError error) {
+                hideLoading();
                 Toast.makeText(getApplicationContext(), Utils.decodeError(error),
                         Toast.LENGTH_SHORT).show();
-                stopLoading();
             }
         };
 
@@ -115,10 +115,10 @@ public class Login extends AppCompatActivity {
         } catch (JSONException e) {
             Toast.makeText(getApplicationContext(), "Failed to log user in",
                     Toast.LENGTH_SHORT).show();
-            stopLoading();
             return;
         }
 
+        showLoading();
         Utils.volleyRequest(getApplication(), Utils.authenticationURL, Utils.loginTAG,
                 Request.Method.POST, body, callback);
     }
@@ -163,7 +163,6 @@ public class Login extends AppCompatActivity {
             } catch (JSONException e) {
                 Toast.makeText(getApplicationContext(), "Failed to sign up",
                         Toast.LENGTH_SHORT).show();
-                stopLoading();
                 return;
             }
 
@@ -177,10 +176,11 @@ public class Login extends AppCompatActivity {
                 public void onFailure(VolleyError error) {
                     Toast.makeText(getApplicationContext(), Utils.decodeError(error),
                             Toast.LENGTH_SHORT).show();
-                    stopLoading();
+                    hideLoading();
                 }
             };
 
+            showLoading();
             Utils.volleyRequest(getApplication(), Utils.usersURL, Utils.signUpTAG,
                     Request.Method.POST, body, callback);
 
@@ -192,6 +192,7 @@ public class Login extends AppCompatActivity {
         Utils.VolleyCallback callback = new Utils.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
+                hideLoading();
                 try {
                     Utils.userID = response.getJSONArray("data").getJSONObject(0)
                             .getString("_id");
@@ -200,7 +201,6 @@ public class Login extends AppCompatActivity {
                 } catch (JSONException e) {
                     Toast.makeText(getApplicationContext(),"Bad Response", Toast.LENGTH_SHORT)
                             .show();
-                    stopLoading();
                 }
             }
 
@@ -208,7 +208,7 @@ public class Login extends AppCompatActivity {
             public void onFailure(VolleyError error) {
                 Toast.makeText(getApplicationContext(), Utils.decodeError(error),
                         Toast.LENGTH_SHORT).show();
-                stopLoading();
+                hideLoading();
             }
         };
 
@@ -224,7 +224,7 @@ public class Login extends AppCompatActivity {
         signUpButton.setVisibility(View.INVISIBLE);
     }
 
-    private void stopLoading() {
+    private void hideLoading() {
         loginLoading.setVisibility(View.INVISIBLE);
         loginButton.setVisibility(View.VISIBLE);
         signUpButton.setVisibility(View.VISIBLE);
