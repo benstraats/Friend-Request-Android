@@ -17,7 +17,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class PendingFriends extends AppCompatActivity {
 
@@ -52,7 +51,8 @@ public class PendingFriends extends AppCompatActivity {
 
     private void getRequests() {
 
-        Utils.VolleyCallback callback = new Utils.VolleyCallback() {
+        final VolleyWrapper vw = VolleyWrapper.getInstance(getApplicationContext());
+        VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
                 hideSearchLoading();
@@ -84,14 +84,16 @@ public class PendingFriends extends AppCompatActivity {
             }
         };
 
-        String url = Utils.requestsURL + "?requestee=" + Utils.userID + "&$limit=49";
+        String url = vw.requestsURL + "?requestee=" + Utils.userID + "&$limit=49";
 
         showSearchLoading();
-        Utils.volleyRequest(getApplication(), url, Utils.getRequestsTAG,
+        vw.request(getApplication(), url, vw.getRequestsTAG,
                 Request.Method.GET, null, callback);
     }
 
     private void acceptRequest(int position) {
+
+        final VolleyWrapper vw = VolleyWrapper.getInstance(getApplicationContext());
         String requestID;
         try {
             requestID = requestedUsers.getJSONObject(position).getString("_id");
@@ -102,7 +104,7 @@ public class PendingFriends extends AppCompatActivity {
 
         final String finalRequestID = requestID;
 
-        Utils.VolleyCallback callback = new Utils.VolleyCallback() {
+        VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
                 Toast.makeText(getApplicationContext(),"Successfully added user", Toast.LENGTH_SHORT).show();
@@ -114,7 +116,7 @@ public class PendingFriends extends AppCompatActivity {
             }
         };
 
-        String url = Utils.friendsURL;
+        String url = vw.friendsURL;
         JSONObject body = new JSONObject();
         try {
             body.put("requestID", finalRequestID);
@@ -124,7 +126,7 @@ public class PendingFriends extends AppCompatActivity {
             return;
         }
 
-        Utils.volleyRequest(getApplication(), url, Utils.acceptRequestTAG,
+        vw.request(getApplication(), url, vw.acceptRequestTAG,
                 Request.Method.POST, body, callback);
     }
 

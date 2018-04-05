@@ -3,21 +3,14 @@ package com.straats.ben.friendrequest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -49,7 +42,7 @@ public class Landing extends AppCompatActivity {
         setContentView(R.layout.activity_landing);
 
         mainListView = findViewById(R.id.mainListView);
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, users);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, users);
         mainListView.setAdapter(adapter);
 
         mainListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -119,7 +112,9 @@ public class Landing extends AppCompatActivity {
 
     private void getFriends() {
 
-        Utils.VolleyCallback callback = new Utils.VolleyCallback() {
+        final VolleyWrapper vw = VolleyWrapper.getInstance(getApplicationContext());
+
+        VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
                 hideLoading();
@@ -148,21 +143,22 @@ public class Landing extends AppCompatActivity {
 
                     adapter.notifyDataSetChanged();
                 } catch (JSONException e) {
-                    Toast.makeText(getApplicationContext(), "Bad Response", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Bad Response", Toast.LENGTH_SHORT)
+                            .show();
                 }
             }
 
             @Override
             public void onFailure(VolleyError error) {
-                Toast.makeText(getApplicationContext(), Utils.decodeError(error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), Utils.decodeError(error), Toast.LENGTH_SHORT)
+                        .show();
                 hideLoading();
             }
         };
 
-        String url = Utils.friendsURL + "?$limit=49";
+        String url = vw.friendsURL + "?$limit=49";
         showLoading();
-        Utils.volleyRequest(getApplication(), url, Utils.getFriendsTAG,
-                Request.Method.GET, null, callback);
+        vw.request(getApplication(), url, vw.getFriendsTAG, Request.Method.GET, null, callback);
     }
 
     private void showLoading() {

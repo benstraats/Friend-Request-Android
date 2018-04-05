@@ -72,7 +72,8 @@ public class Profile extends AppCompatActivity {
     }
 
     private void getProfile(final String currUserID) {
-        Utils.VolleyCallback callback = new Utils.VolleyCallback() {
+        final VolleyWrapper vw = VolleyWrapper.getInstance(getApplicationContext());
+        VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
                 hideLoading();
@@ -105,16 +106,16 @@ public class Profile extends AppCompatActivity {
             }
         };
 
-        String url = Utils.profileURL + "?userID=" + currUserID;
+        String url = vw.profileURL + "?userID=" + currUserID;
 
         showLoading();
-        Utils.volleyRequest(getApplication(), url, Utils.viewProfileTAG,
-                Request.Method.GET, null, callback);
+        vw.request(getApplication(), url, vw.viewProfileTAG, Request.Method.GET, null,
+                callback);
     }
 
     private void saveProfile(final View v) {
-
-        Utils.VolleyCallback callback = new Utils.VolleyCallback() {
+        final VolleyWrapper vw = VolleyWrapper.getInstance(getApplicationContext());
+        VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
                 hideLoading();
@@ -140,7 +141,7 @@ public class Profile extends AppCompatActivity {
             }
         };
 
-        String url = Utils.profileURL;
+        String url = vw.profileURL;
         int method = Request.Method.POST;
 
         if (!creatingProfile) {
@@ -149,7 +150,7 @@ public class Profile extends AppCompatActivity {
         }
 
         showLoading();
-        Utils.volleyRequest(getApplication(), url, Utils.saveProfileTAG, method,
+        vw.request(getApplication(), url, vw.saveProfileTAG, method,
                 getProfileJSON(), callback);
     }
 
