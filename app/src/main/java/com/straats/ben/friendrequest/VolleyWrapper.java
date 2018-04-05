@@ -24,6 +24,7 @@ public class VolleyWrapper {
     private static VolleyWrapper instance = null;
     private static RequestQueue queue;
 
+    //Not sure if these constants should be in Utils or VolleyWrapper
     //URLs Section
     protected final String baseURL = "http://friendrequest.ca/";
     protected final String usersURL = baseURL + "users";
