@@ -37,7 +37,7 @@ public class FindFriends extends AppCompatActivity {
     private boolean doneCurrentSearch = true;
     private boolean currentlySearching = false;
     private int currentSearchSkip = 0;
-    private int currentSearchLimit = 1;
+    private int currentSearchLimit = 49;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

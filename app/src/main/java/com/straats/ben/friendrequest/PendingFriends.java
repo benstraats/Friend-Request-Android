@@ -32,7 +32,7 @@ public class PendingFriends extends AppCompatActivity {
     private boolean doneUserLoad = true;
     private boolean currentlyLoading = false;
     private int userLoadSkip = 0;
-    private int userLoadLimit = 1;
+    private int userLoadLimit = 49;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
