@@ -49,7 +49,8 @@ public class ViewProfile extends AppCompatActivity {
     }
 
     private void getProfile(final String friendID) {
-        Utils.VolleyCallback callback = new Utils.VolleyCallback() {
+        final VolleyWrapper vw = VolleyWrapper.getInstance(getApplicationContext());
+        VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
                 hideLoading();
@@ -80,10 +81,10 @@ public class ViewProfile extends AppCompatActivity {
             }
         };
 
-        String url = Utils.profileURL + "?userID=" + friendID;
+        String url = vw.profileURL + "?userID=" + friendID;
 
         showLoading();
-        Utils.volleyRequest(getApplication(), url, Utils.viewProfileTAG,
+        vw.request(getApplication(), url, vw.viewProfileTAG,
                 Request.Method.GET, null, callback);
     }
 

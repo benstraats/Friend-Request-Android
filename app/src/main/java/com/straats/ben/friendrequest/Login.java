@@ -15,8 +15,6 @@ import com.android.volley.VolleyError;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-
 public class Login extends AppCompatActivity {
 
     private Button signUpButton;
@@ -83,7 +81,9 @@ public class Login extends AppCompatActivity {
 
     private void logMeIn(final String username, final String password) {
 
-        Utils.VolleyCallback callback = new Utils.VolleyCallback() {
+        final VolleyWrapper vw = VolleyWrapper.getInstance(getApplicationContext());
+
+        VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
                 try {
@@ -119,7 +119,7 @@ public class Login extends AppCompatActivity {
         }
 
         showLoading();
-        Utils.volleyRequest(getApplication(), Utils.authenticationURL, Utils.loginTAG,
+        vw.request(getApplication(), vw.authenticationURL, vw.loginTAG,
                 Request.Method.POST, body, callback);
     }
 
@@ -155,6 +155,8 @@ public class Login extends AppCompatActivity {
         else {
             showLoading();
 
+            final VolleyWrapper vw = VolleyWrapper.getInstance(getApplicationContext());
+
             JSONObject body = new JSONObject();
             try {
                 body.put("email", username);
@@ -166,7 +168,7 @@ public class Login extends AppCompatActivity {
                 return;
             }
 
-            Utils.VolleyCallback callback = new Utils.VolleyCallback() {
+            VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
                 @Override
                 public void onSuccess(JSONObject response) {
                     logMeIn(username, password);
@@ -181,7 +183,7 @@ public class Login extends AppCompatActivity {
             };
 
             showLoading();
-            Utils.volleyRequest(getApplication(), Utils.usersURL, Utils.signUpTAG,
+            vw.request(getApplication(), vw.usersURL, vw.signUpTAG,
                     Request.Method.POST, body, callback);
 
         }
@@ -189,7 +191,8 @@ public class Login extends AppCompatActivity {
 
     private void getCurrentUserInfo(final String userEmail) {
 
-        Utils.VolleyCallback callback = new Utils.VolleyCallback() {
+        final VolleyWrapper vw = VolleyWrapper.getInstance(getApplicationContext());
+        VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
                 hideLoading();
@@ -212,9 +215,9 @@ public class Login extends AppCompatActivity {
             }
         };
 
-        String url = Utils.usersURL + "?email=" + userEmail;
+        String url = vw.usersURL + "?email=" + userEmail;
 
-        Utils.volleyRequest(getApplication(), url, Utils.searchUsersTAG,
+        vw.request(getApplication(), url, vw.searchUsersTAG,
                 Request.Method.GET, null, callback);
     }
 
