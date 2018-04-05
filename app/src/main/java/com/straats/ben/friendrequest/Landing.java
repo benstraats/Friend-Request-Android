@@ -134,6 +134,7 @@ public class Landing extends AppCompatActivity {
         super.onResume();
         userLoadSkip = 0;
         users.clear();
+        friendUsers = null;
         doneUserLoad = false;
         getFriends(userLoadSkip, userLoadLimit);
     }
@@ -152,9 +153,9 @@ public class Landing extends AppCompatActivity {
 
                     int numUsers = Math.min((total-skip), limit);
 
-                    friendUsers = response.getJSONArray("data");
+                    friendUsers = Utils.combineArray(friendUsers, response.getJSONArray("data"));
 
-                    for (int i=0; i<numUsers; i++) {
+                    for (int i=skip; i<(skip+numUsers); i++) {
                         String user1 = friendUsers.getJSONObject(i).getString("user1");
                         String user2 = friendUsers.getJSONObject(i).getString("user2");
 

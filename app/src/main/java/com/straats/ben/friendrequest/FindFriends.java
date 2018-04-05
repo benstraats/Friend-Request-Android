@@ -91,6 +91,7 @@ public class FindFriends extends AppCompatActivity {
                 users.clear();
                 adapter.notifyDataSetChanged();
                 currentSearchSkip = 0;
+                searchedUsers = null;
                 searchUsers(searchText.getText().toString(), currentSearchSkip, currentSearchLimit);
             }
         });
@@ -114,7 +115,7 @@ public class FindFriends extends AppCompatActivity {
 
                     int numUsers = Math.min((total-searchSkip), searchLimit);
 
-                    searchedUsers = response.getJSONArray("data");
+                    searchedUsers = Utils.combineArray(searchedUsers, response.getJSONArray("data"));
 
                     for (int i=0; i<numUsers ; i++) {
                         users.add(searchedUsers.getJSONObject(i).getString("name") + " (" +

@@ -68,4 +68,23 @@ public class Utils {
         }
     }
 
+    //b is appended to a
+    protected static JSONArray combineArray(JSONArray a, JSONArray b) {
+
+        if (a == null) {
+            return b;
+        } else if (b == null) {
+            return a;
+        }
+
+        try {
+            int aLength = a.length();
+            for (int i = 0; i < b.length(); i++) {
+                a.put(i+aLength, b.getJSONObject(i));
+            }
+        } catch (JSONException e) {
+            return null;
+        }
+        return a;
+    }
 }

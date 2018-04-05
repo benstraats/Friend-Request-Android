@@ -55,6 +55,7 @@ public class PendingFriends extends AppCompatActivity {
         userLoadSkip = 0;
         users.clear();
         doneUserLoad = false;
+        requestedUsers = null;
         getRequests(userLoadSkip, userLoadLimit);
 
         mainListView.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -90,10 +91,10 @@ public class PendingFriends extends AppCompatActivity {
 
                     int numUsers = Math.min((total-skip), limit);
 
-                    requestedUsers = response.getJSONArray("data");
+                    requestedUsers = Utils.combineArray(requestedUsers, response.getJSONArray("data"));
                     JSONObject userInfo = response.getJSONObject("userInfo");
 
-                    for (int i=0; i<numUsers; i++) {
+                    for (int i=skip; i<(skip+numUsers); i++) {
                         users.add(Utils.getUserInfo(requestedUsers.getJSONObject(i).getString("requester"), userInfo));
                     }
 
