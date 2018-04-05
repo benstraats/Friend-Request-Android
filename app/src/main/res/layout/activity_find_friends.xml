@@ -44,4 +44,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/SearchButton"
         app:layout_constraintVertical_bias="0.625" />
+
+    <ProgressBar
+        android:id="@+id/searchLoadingBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/SearchButton"
+        app:layout_constraintEnd_toEndOf="@+id/SearchButton"
+        app:layout_constraintStart_toStartOf="@+id/SearchButton"
+        app:layout_constraintTop_toTopOf="@+id/SearchButton" />
 </android.support.constraint.ConstraintLayout>

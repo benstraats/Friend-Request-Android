@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,6 +40,8 @@ public class Landing extends AppCompatActivity {
 
     private Button pendingFriendsButton;
     private Button addFriendsButton;
+
+    private ProgressBar loadingBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +92,8 @@ public class Landing extends AppCompatActivity {
         pendingFriendsButton = findViewById(R.id.PendingFriendsButton);
         addFriendsButton = findViewById(R.id.AddFriendsButton);
 
+        loadingBar = findViewById(R.id.loadingBar);
+
         pendingFriendsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,6 +122,7 @@ public class Landing extends AppCompatActivity {
         Utils.VolleyCallback callback = new Utils.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
+                hideLoading();
                 try {
                     users.clear();
 
@@ -149,12 +155,21 @@ public class Landing extends AppCompatActivity {
             @Override
             public void onFailure(VolleyError error) {
                 Toast.makeText(getApplicationContext(), Utils.decodeError(error), Toast.LENGTH_SHORT).show();
+                hideLoading();
             }
         };
 
         String url = Utils.friendsURL + "?$limit=49";
-
+        showLoading();
         Utils.volleyRequest(getApplication(), url, Utils.getFriendsTAG,
                 Request.Method.GET, null, callback);
+    }
+
+    private void showLoading() {
+        loadingBar.setVisibility(View.VISIBLE);
+    }
+
+    private void hideLoading() {
+        loadingBar.setVisibility(View.INVISIBLE);
     }
 }

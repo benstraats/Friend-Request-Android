@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -21,6 +22,7 @@ import java.util.HashMap;
 public class PendingFriends extends AppCompatActivity {
 
     private ListView mainListView;
+    private ProgressBar searchLoadingBar;
 
     private ArrayList<String> users = new ArrayList<String>();
     private ArrayAdapter<String> adapter;
@@ -35,6 +37,8 @@ public class PendingFriends extends AppCompatActivity {
         mainListView = findViewById(R.id.PendingList);
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, users);
         mainListView.setAdapter(adapter);
+
+        searchLoadingBar = findViewById(R.id.searchLoadingBar);
 
         mainListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -51,6 +55,7 @@ public class PendingFriends extends AppCompatActivity {
         Utils.VolleyCallback callback = new Utils.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
+                hideSearchLoading();
                 try {
                     users.clear();
 
@@ -74,12 +79,14 @@ public class PendingFriends extends AppCompatActivity {
 
             @Override
             public void onFailure(VolleyError error) {
+                hideSearchLoading();
                 Toast.makeText(getApplicationContext(), Utils.decodeError(error), Toast.LENGTH_SHORT).show();
             }
         };
 
         String url = Utils.requestsURL + "?requestee=" + Utils.userID + "&$limit=49";
 
+        showSearchLoading();
         Utils.volleyRequest(getApplication(), url, Utils.getRequestsTAG,
                 Request.Method.GET, null, callback);
     }
@@ -119,5 +126,13 @@ public class PendingFriends extends AppCompatActivity {
 
         Utils.volleyRequest(getApplication(), url, Utils.acceptRequestTAG,
                 Request.Method.POST, body, callback);
+    }
+
+    private void showSearchLoading() {
+        searchLoadingBar.setVisibility(View.VISIBLE);
+    }
+
+    private void hideSearchLoading() {
+        searchLoadingBar.setVisibility(View.INVISIBLE);
     }
 }
