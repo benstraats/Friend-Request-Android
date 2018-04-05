@@ -3,6 +3,7 @@ package com.straats.ben.friendrequest;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -33,6 +34,11 @@ public class FindFriends extends AppCompatActivity {
     private EditText searchText;
     private ProgressBar searchLoadingBar;
 
+    private boolean doneCurrentSearch = true;
+    private boolean currentlySearching = false;
+    private int currentSearchSkip = 0;
+    private int currentSearchLimit = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +61,25 @@ public class FindFriends extends AppCompatActivity {
             }
         });
 
+        mainListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem,
+                                 int visibleItemCount, int totalItemCount) {
+
+                final int lastItem = firstVisibleItem + visibleItemCount;
+
+                if(lastItem == totalItemCount && !doneCurrentSearch && !currentlySearching) {
+                    currentSearchSkip += currentSearchLimit;
+                    searchUsers(searchText.getText().toString(), currentSearchSkip, currentSearchLimit);
+                }
+            }
+        });
+
         searchButton = findViewById(R.id.SearchButton);
         searchText = findViewById(R.id.SearchEditText);
         searchLoadingBar = findViewById(R.id.searchLoadingBar);
@@ -63,12 +88,20 @@ public class FindFriends extends AppCompatActivity {
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchUsers(searchText.getText().toString());
+                users.clear();
+                adapter.notifyDataSetChanged();
+                currentSearchSkip = 0;
+                searchUsers(searchText.getText().toString(), currentSearchSkip, currentSearchLimit);
             }
         });
     }
 
-    private void searchUsers(final String search) {
+    private void searchUsers(final String search, final int searchSkip, final int searchLimit) {
+
+        currentlySearching = true;
+        if (searchSkip == 0) {
+            doneCurrentSearch = false;
+        }
 
         final VolleyWrapper vw = VolleyWrapper.getInstance(getApplicationContext());
 
@@ -77,24 +110,28 @@ public class FindFriends extends AppCompatActivity {
             public void onSuccess(JSONObject response) {
                 hideSearchLoading();
                 try {
-                    users.clear();
-
                     int total = Integer.parseInt(response.getString("total"));
-                    int limit = Integer.parseInt(response.getString("limit"));
 
-                    int num = Math.min(total, limit);
+                    int numUsers = Math.min((total-searchSkip), searchLimit);
 
                     searchedUsers = response.getJSONArray("data");
 
-                    for (int i=0; i<num; i++) {
+                    for (int i=0; i<numUsers ; i++) {
                         users.add(searchedUsers.getJSONObject(i).getString("name") + " (" +
                                 searchedUsers.getJSONObject(i).getString("email") + ")");
+                    }
+
+                    currentlySearching = false;
+
+                    if (numUsers  < searchLimit || (searchSkip + numUsers) == total) {
+                        doneCurrentSearch = true;
                     }
 
                     adapter.notifyDataSetChanged();
                 } catch (JSONException e) {
                     Toast.makeText(getApplicationContext(),"Bad Response", Toast.LENGTH_SHORT)
                             .show();
+                    currentlySearching = false;
                 }
             }
 
@@ -103,10 +140,11 @@ public class FindFriends extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),Utils.decodeError(error), Toast.LENGTH_SHORT)
                         .show();
                 hideSearchLoading();
+                currentlySearching = false;
             }
         };
 
-        String url = vw.usersURL + "?$search=" + search + "&$limit=50";
+        String url = vw.usersURL + "?$search=" + search + "&$limit=" + searchLimit + "&$skip=" + searchSkip;
 
         showSearchLoading();
         vw.request(getApplication(), url, vw.searchUsersTAG, Request.Method.GET, null,

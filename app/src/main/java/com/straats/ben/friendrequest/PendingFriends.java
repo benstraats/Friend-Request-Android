@@ -3,6 +3,7 @@ package com.straats.ben.friendrequest;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -28,6 +29,11 @@ public class PendingFriends extends AppCompatActivity {
 
     private JSONArray requestedUsers;
 
+    private boolean doneUserLoad = true;
+    private boolean currentlyLoading = false;
+    private int userLoadSkip = 0;
+    private int userLoadLimit = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,34 +52,60 @@ public class PendingFriends extends AppCompatActivity {
             }
         });
 
-        getRequests();
+        userLoadSkip = 0;
+        users.clear();
+        doneUserLoad = false;
+        getRequests(userLoadSkip, userLoadLimit);
+
+        mainListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem,
+                                 int visibleItemCount, int totalItemCount) {
+
+                final int lastItem = firstVisibleItem + visibleItemCount;
+
+                if(lastItem == totalItemCount && !doneUserLoad && !currentlyLoading) {
+                    userLoadSkip += userLoadLimit;
+                    getRequests(userLoadSkip, userLoadLimit);
+                }
+            }
+        });
     }
 
-    private void getRequests() {
+    private void getRequests(final int skip, final int limit) {
 
+        currentlyLoading = true;
         final VolleyWrapper vw = VolleyWrapper.getInstance(getApplicationContext());
+
         VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
                 hideSearchLoading();
                 try {
-                    users.clear();
-
                     int total = Integer.parseInt(response.getString("total"));
-                    int limit = Integer.parseInt(response.getString("limit"));
 
-                    int num = Math.min(total, limit);
+                    int numUsers = Math.min((total-skip), limit);
 
                     requestedUsers = response.getJSONArray("data");
                     JSONObject userInfo = response.getJSONObject("userInfo");
 
-                    for (int i=0; i<num; i++) {
+                    for (int i=0; i<numUsers; i++) {
                         users.add(Utils.getUserInfo(requestedUsers.getJSONObject(i).getString("requester"), userInfo));
+                    }
+
+                    currentlyLoading = false;
+                    if (numUsers < limit || (skip + numUsers) == total) {
+                        doneUserLoad = true;
                     }
 
                     adapter.notifyDataSetChanged();
                 } catch (JSONException e) {
                     Toast.makeText(getApplicationContext(),"Bad Response",Toast.LENGTH_SHORT).show();
+                    currentlyLoading = false;
                 }
             }
 
@@ -81,10 +113,12 @@ public class PendingFriends extends AppCompatActivity {
             public void onFailure(VolleyError error) {
                 hideSearchLoading();
                 Toast.makeText(getApplicationContext(), Utils.decodeError(error), Toast.LENGTH_SHORT).show();
+                currentlyLoading = false;
             }
         };
 
-        String url = vw.requestsURL + "?requestee=" + Utils.userID + "&$limit=49";
+        String url = vw.requestsURL + "?requestee=" + Utils.userID + "&$limit=" + limit + "&$skip="
+                + skip;
 
         showSearchLoading();
         vw.request(getApplication(), url, vw.getRequestsTAG,
