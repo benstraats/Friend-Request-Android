@@ -12,7 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Login">
+        <activity android:name=".Login"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,17 +23,22 @@
         <activity
             android:name=".Landing"
             android:label="@string/title_activity_landing"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Profile"
             android:label="@string/title_activity_profile"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ViewProfile"
             android:label="@string/title_activity_view_profile"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".FindFriends" />
-        <activity android:name=".PendingFriends"></activity>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait" />
+        <activity android:name=".FindFriends"
+            android:screenOrientation="portrait" />
+        <activity android:name=".PendingFriends"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
