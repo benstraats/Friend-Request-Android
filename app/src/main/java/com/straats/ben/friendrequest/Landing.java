@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -35,6 +36,11 @@ public class Landing extends AppCompatActivity {
     private Button addFriendsButton;
 
     private ProgressBar loadingBar;
+
+    private boolean doneUserLoad = true;
+    private boolean currentlyLoading = false;
+    private int userLoadSkip = 0;
+    private int userLoadLimit = 49;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,16 +108,40 @@ public class Landing extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        mainListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem,
+                                 int visibleItemCount, int totalItemCount) {
+
+                final int lastItem = firstVisibleItem + visibleItemCount;
+
+                if(lastItem == totalItemCount && !doneUserLoad && !currentlyLoading) {
+                    userLoadSkip += userLoadLimit;
+                    getFriends(userLoadSkip, userLoadLimit);
+                }
+            }
+        });
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        getFriends();
+        userLoadSkip = 0;
+        users.clear();
+        friendUsers = null;
+        doneUserLoad = false;
+        getFriends(userLoadSkip, userLoadLimit);
     }
 
-    private void getFriends() {
+    private void getFriends(final int skip, final int limit) {
 
+        currentlyLoading = true;
         final VolleyWrapper vw = VolleyWrapper.getInstance(getApplicationContext());
 
         VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
@@ -119,16 +149,13 @@ public class Landing extends AppCompatActivity {
             public void onSuccess(JSONObject response) {
                 hideLoading();
                 try {
-                    users.clear();
-
                     int total = Integer.parseInt(response.getString("total"));
-                    int limit = Integer.parseInt(response.getString("limit"));
 
-                    int num = Math.min(total, limit);
+                    int numUsers = Math.min((total-skip), limit);
 
-                    friendUsers = response.getJSONArray("data");
+                    friendUsers = Utils.combineArray(friendUsers, response.getJSONArray("data"));
 
-                    for (int i=0; i<num; i++) {
+                    for (int i=skip; i<(skip+numUsers); i++) {
                         String user1 = friendUsers.getJSONObject(i).getString("user1");
                         String user2 = friendUsers.getJSONObject(i).getString("user2");
 
@@ -141,10 +168,17 @@ public class Landing extends AppCompatActivity {
                         }
                     }
 
+                    currentlyLoading = false;
+
+                    if (numUsers < limit || (skip + numUsers) == total) {
+                        doneUserLoad = true;
+                    }
+
                     adapter.notifyDataSetChanged();
                 } catch (JSONException e) {
                     Toast.makeText(getApplicationContext(), "Bad Response", Toast.LENGTH_SHORT)
                             .show();
+                    currentlyLoading = false;
                 }
             }
 
@@ -153,10 +187,11 @@ public class Landing extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), Utils.decodeError(error), Toast.LENGTH_SHORT)
                         .show();
                 hideLoading();
+                currentlyLoading = false;
             }
         };
 
-        String url = vw.friendsURL + "?$limit=49";
+        String url = vw.friendsURL + "?$limit=" + limit + "&$skip=" + skip;
         showLoading();
         vw.request(getApplication(), url, vw.getFriendsTAG, Request.Method.GET, null, callback);
     }
