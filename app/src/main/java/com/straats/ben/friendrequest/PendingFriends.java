@@ -1,5 +1,7 @@
 package com.straats.ben.friendrequest;
 
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -40,15 +42,31 @@ public class PendingFriends extends AppCompatActivity {
         setContentView(R.layout.activity_pending_friends);
 
         mainListView = findViewById(R.id.PendingList);
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, users);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, users);
         mainListView.setAdapter(adapter);
 
         searchLoadingBar = findViewById(R.id.searchLoadingBar);
 
         mainListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                acceptRequest(position);
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+
+                builder.setMessage("Are you sure you want to accept this friend request?");
+                builder.setTitle("Accept request?");
+
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        acceptRequest(position);
+                    }
+                }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        //Send delete request
+                        rejectRequest(position);
+                    }
+                });
+
+                builder.show();
             }
         });
 
@@ -163,6 +181,34 @@ public class PendingFriends extends AppCompatActivity {
 
         vw.request(getApplication(), url, vw.acceptRequestTAG,
                 Request.Method.POST, body, callback);
+    }
+
+    private void rejectRequest(int position) {
+        final VolleyWrapper vw = VolleyWrapper.getInstance(getApplicationContext());
+        String requestID;
+        try {
+            requestID = requestedUsers.getJSONObject(position).getString("_id");
+        } catch (JSONException e) {
+            Toast.makeText(getApplicationContext(),"Failed to parse requested user",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                Toast.makeText(getApplicationContext(),"Successfully deleted request", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(VolleyError error) {
+                Toast.makeText(getApplicationContext(), Utils.decodeError(error), Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        String url = vw.requestsURL + "/" + requestID;
+
+        vw.request(getApplication(), url, vw.rejectRequestTAG,
+                Request.Method.DELETE, null, callback);
     }
 
     private void showSearchLoading() {
