@@ -1,5 +1,7 @@
 package com.straats.ben.friendrequest;
 
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -38,6 +40,7 @@ public class FindFriends extends AppCompatActivity {
     private boolean currentlySearching = false;
     private int currentSearchSkip = 0;
     private int currentSearchLimit = 49;
+    private String currentSearchText = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,14 +53,37 @@ public class FindFriends extends AppCompatActivity {
 
         mainListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+
+                builder.setMessage("Are you sure you want to add this user?");
+
                 try {
-                    String userID = searchedUsers.getJSONObject(position).getString("_id");
-                    requestUser(userID);
-                } catch (JSONException e) {
-                    Toast.makeText(getApplicationContext(),"Bad Response", Toast.LENGTH_SHORT)
-                            .show();
+                    builder.setTitle("Add " + searchedUsers.getJSONObject(position)
+                            .getString("name") + "?");
+                } catch ( JSONException e) {
+                    builder.setTitle("Add user?");
                 }
+
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        //Attempt to add the user
+                        try {
+                            String userID = searchedUsers.getJSONObject(position).getString("_id");
+                            requestUser(userID);
+                        } catch (JSONException e) {
+                            Toast.makeText(getApplicationContext(),"Bad Response", Toast.LENGTH_SHORT)
+                                    .show();
+                        }
+                    }
+                }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // do nothing
+                    }
+                });
+
+                builder.show();
             }
         });
 
@@ -75,7 +101,7 @@ public class FindFriends extends AppCompatActivity {
 
                 if(lastItem == totalItemCount && !doneCurrentSearch && !currentlySearching) {
                     currentSearchSkip += currentSearchLimit;
-                    searchUsers(searchText.getText().toString(), currentSearchSkip, currentSearchLimit);
+                    searchUsers(currentSearchText, currentSearchSkip, currentSearchLimit);
                 }
             }
         });
@@ -92,6 +118,7 @@ public class FindFriends extends AppCompatActivity {
                 adapter.notifyDataSetChanged();
                 currentSearchSkip = 0;
                 searchedUsers = null;
+                currentSearchText = searchText.getText().toString();
                 searchUsers(searchText.getText().toString(), currentSearchSkip, currentSearchLimit);
             }
         });

@@ -41,6 +41,7 @@ public class VolleyWrapper {
     protected final String requestUserTAG = "Request User";
     protected final String getRequestsTAG = "Get My Requests";
     protected final String acceptRequestTAG = "Accept Request";
+    protected final String rejectRequestTAG = "Reject Request";
     protected final String viewProfileTAG = "View Profile";
     protected final String saveProfileTAG = "Save Profile";
 
