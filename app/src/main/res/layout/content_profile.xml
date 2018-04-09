@@ -31,7 +31,7 @@
                     android:id="@+id/addRowButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Add Row" />
+                    android:text="@string/my_profile_activity_add_row" />
             </TableRow>
 
         </TableLayout>

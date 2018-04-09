@@ -16,4 +16,10 @@
     <string name="landing_activity_add_friends">Add Friends</string>
 
     <string name="find_friends_activity_search">Search</string>
+
+    <string name="my_profile_activity_add_row">Add Row</string>
+    <string name="my_profile_activity_platform">Platform</string>
+    <string name="my_profile_activity_handle">Handle</string>
+    <string name="my_profile_activity_delete_row">Delete</string>
+    <string name="my_profile_activity_public">Public</string>
 </resources>
