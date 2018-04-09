@@ -11,4 +11,7 @@
     <string name="login_activity_username">Username</string>
     <string name="login_activity_password">Password</string>
     <string name="login_activity_retype_password">Retype Password</string>
+
+    <string name="landing_activity_pending_friends">Pending Friends</string>
+    <string name="landing_activity_add_friends">Add Friends</string>
 </resources>
