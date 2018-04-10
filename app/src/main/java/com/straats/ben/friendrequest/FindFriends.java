@@ -189,8 +189,8 @@ public class FindFriends extends AppCompatActivity {
             @Override
             public void onSuccess(JSONObject response) {
                 Toast.makeText(getApplicationContext(),
-                        R.string.find_friends_activity_add_user_successful + userID,
-                        Toast.LENGTH_SHORT).show();
+                        getResources().getString(R.string.find_friends_activity_add_user_successful)
+                                + " " + userID, Toast.LENGTH_SHORT).show();
             }
 
             @Override
