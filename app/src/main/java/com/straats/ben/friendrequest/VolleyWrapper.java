@@ -26,7 +26,7 @@ public class VolleyWrapper {
 
     //Not sure if these constants should be in Utils or VolleyWrapper
     //URLs Section
-    protected final String baseURL = "http://friendrequest.ca/";
+    protected final String baseURL = "http://api.friendrequest.ca/";
     protected final String usersURL = baseURL + "users";
     protected final String authenticationURL = baseURL + "authentication";
     protected final String friendsURL = baseURL + "friends";

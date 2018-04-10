@@ -4,13 +4,27 @@
     <string name="title_activity_profile">My Profile</string>
     <string name="title_activity_view_profile">Friends Profile</string>
 
+    <string name="bad_response">Bad Response</string>
+
     <string name="login_activity_welcome">Welcome to Friend Request</string>
     <string name="login_activity_login">Login</string>
     <string name="login_activity_signup">Sign Up</string>
+    <string name="login_activity_confirm">Confirm</string>
+    <string name="login_activity_back_to_login">Back to Login</string>
     <string name="login_activity_full_name">Full Name</string>
     <string name="login_activity_username">Username</string>
     <string name="login_activity_password">Password</string>
     <string name="login_activity_retype_password">Retype Password</string>
+    <string name="login_activity_failed_to_login">Failed to log user in</string>
+    <string name="login_activity_username_too_short">Username too short</string>
+    <string name="login_activity_username_too_long">Username too long</string>
+    <string name="login_activity_name_too_short">Name too short</string>
+    <string name="login_activity_name_too_long">Name too long</string>
+    <string name="login_activity_password_too_short">Password too short</string>
+    <string name="login_activity_password_too_long">Password too long</string>
+    <string name="login_activity_password_dont_match">Passwords don\'t match</string>
+    <string name="login_activity_failed_to_signup">Failed to Sign Up</string>
+
 
     <string name="landing_activity_pending_friends">Pending Friends</string>
     <string name="landing_activity_add_friends">Add Friends</string>

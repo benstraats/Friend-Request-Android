@@ -65,14 +65,14 @@ public class Login extends AppCompatActivity {
                 if (isSignUp) {
                     nameTextBox.setVisibility(View.INVISIBLE);
                     confirmPasswordTextBox.setVisibility(View.INVISIBLE);
-                    loginButton.setText("Login");
-                    signUpButton.setText("SignUp");
+                    loginButton.setText(R.string.login_activity_login);
+                    signUpButton.setText(R.string.login_activity_signup);
                     isSignUp = false;
                 } else {
                     nameTextBox.setVisibility(View.VISIBLE);
                     confirmPasswordTextBox.setVisibility(View.VISIBLE);
-                    loginButton.setText("Confirm");
-                    signUpButton.setText("Back to login");
+                    loginButton.setText(R.string.login_activity_confirm);
+                    signUpButton.setText(R.string.login_activity_back_to_login);
                     isSignUp = true;
                 }
             }
@@ -80,6 +80,24 @@ public class Login extends AppCompatActivity {
     }
 
     private void logMeIn(final String username, final String password) {
+
+        if (username.length() < 3) {
+            Toast.makeText(getApplicationContext(), R.string.login_activity_username_too_short,
+                    Toast.LENGTH_SHORT)
+                    .show();
+        }
+        else if (username.length() > 30) {
+            Toast.makeText(getApplicationContext(), R.string.login_activity_username_too_long,
+                    Toast.LENGTH_SHORT).show();
+        }
+        else if (password.length() < 6) {
+            Toast.makeText(getApplicationContext(), R.string.login_activity_password_too_short,
+                    Toast.LENGTH_SHORT).show();
+        }
+        else if (password.length() > 50) {
+            Toast.makeText(getApplicationContext(), R.string.login_activity_password_too_long,
+                    Toast.LENGTH_SHORT).show();
+        }
 
         final VolleyWrapper vw = VolleyWrapper.getInstance(getApplicationContext());
 
@@ -93,8 +111,8 @@ public class Login extends AppCompatActivity {
                     Intent intent = new Intent(getApplicationContext(), Landing.class);
                     startActivity(intent);
                 } catch (JSONException e) {
-                    Toast.makeText(getApplicationContext(),"Bad Response",Toast.LENGTH_SHORT)
-                            .show();
+                    Toast.makeText(getApplicationContext(), R.string.bad_response,
+                            Toast.LENGTH_SHORT).show();
                     hideLoading();
                 }
             }
@@ -113,7 +131,7 @@ public class Login extends AppCompatActivity {
             body.put("email", username);
             body.put("password", password);
         } catch (JSONException e) {
-            Toast.makeText(getApplicationContext(), "Failed to log user in",
+            Toast.makeText(getApplicationContext(), R.string.login_activity_failed_to_login,
                     Toast.LENGTH_SHORT).show();
             return;
         }
@@ -126,31 +144,33 @@ public class Login extends AppCompatActivity {
     private void signMeUp(final String username, String name, final String password,
                           String repeatUsername) {
         if (username.length() < 3) {
-            Toast.makeText(getApplicationContext(),"Username too short", Toast.LENGTH_SHORT)
+            Toast.makeText(getApplicationContext(), R.string.login_activity_username_too_short,
+                    Toast.LENGTH_SHORT)
                     .show();
         }
         else if (username.length() > 30) {
-            Toast.makeText(getApplicationContext(), "Username too long", Toast.LENGTH_SHORT)
-                    .show();
+            Toast.makeText(getApplicationContext(), R.string.login_activity_username_too_long,
+                    Toast.LENGTH_SHORT).show();
         }
         else if (name.length() < 3) {
-            Toast.makeText(getApplicationContext(),"Name too short",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.login_activity_name_too_short,
+                    Toast.LENGTH_SHORT).show();
         }
         else if (name.length() > 100) {
-            Toast.makeText(getApplicationContext(), "Name too long", Toast.LENGTH_SHORT)
-                    .show();
+            Toast.makeText(getApplicationContext(), R.string.login_activity_name_too_long,
+                    Toast.LENGTH_SHORT).show();
         }
         else if (password.length() < 6) {
-            Toast.makeText(getApplicationContext(),"Password too short",Toast.LENGTH_SHORT)
-                    .show();
+            Toast.makeText(getApplicationContext(), R.string.login_activity_password_too_short,
+                    Toast.LENGTH_SHORT).show();
         }
         else if (password.length() > 50) {
-            Toast.makeText(getApplicationContext(),"Password too long",Toast.LENGTH_SHORT)
-                    .show();
+            Toast.makeText(getApplicationContext(), R.string.login_activity_password_too_long,
+                    Toast.LENGTH_SHORT).show();
         }
         else if (!password.equals(repeatUsername)) {
-            Toast.makeText(getApplicationContext(),"Passwords don\'t match",Toast.LENGTH_SHORT)
-                    .show();
+            Toast.makeText(getApplicationContext(), R.string.login_activity_password_dont_match,
+                    Toast.LENGTH_SHORT).show();
         }
         else {
             showLoading();
@@ -163,7 +183,7 @@ public class Login extends AppCompatActivity {
                 body.put("name", name);
                 body.put("password", password);
             } catch (JSONException e) {
-                Toast.makeText(getApplicationContext(), "Failed to sign up",
+                Toast.makeText(getApplicationContext(), R.string.login_activity_failed_to_signup,
                         Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -202,8 +222,8 @@ public class Login extends AppCompatActivity {
                     Utils.userName = response.getJSONArray("data").getJSONObject(0)
                             .getString("name");
                 } catch (JSONException e) {
-                    Toast.makeText(getApplicationContext(),"Bad Response", Toast.LENGTH_SHORT)
-                            .show();
+                    Toast.makeText(getApplicationContext(), R.string.bad_response,
+                            Toast.LENGTH_SHORT).show();
                 }
             }
 
