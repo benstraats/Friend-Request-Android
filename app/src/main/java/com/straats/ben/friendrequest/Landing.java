@@ -1,6 +1,8 @@
 package com.straats.ben.friendrequest;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -46,6 +48,15 @@ public class Landing extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_landing);
+
+        /* toast of writing the username*/
+
+        SharedPreferences prefs = getApplication().getSharedPreferences(
+                "com.friendrequest.app", Context.MODE_PRIVATE);
+
+        String savedUsername = prefs.getString("username", "");
+
+        Toast.makeText(getApplicationContext(), savedUsername, Toast.LENGTH_SHORT).show();
 
         mainListView = findViewById(R.id.mainListView);
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, users);

@@ -1,6 +1,8 @@
 package com.straats.ben.friendrequest;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -91,6 +93,19 @@ public class Login extends AppCompatActivity {
                     Utils.userEmail = username;
                     getCurrentUserInfo(username);
                     Intent intent = new Intent(getApplicationContext(), Landing.class);
+
+
+/* trying to make it so when you login succesfully your phone will keep it so you dont have to retype
+  user and password each time */
+                    SharedPreferences prefs = getApplication().getSharedPreferences(
+                            "com.friendrequest.app", Context.MODE_PRIVATE);
+
+                    /* save for the username*/
+                    prefs.edit().putString("UserName",username).apply();
+
+                    /* save for the password*/
+                    prefs.edit().putString("Pass",password).apply();
+
                     startActivity(intent);
                 } catch (JSONException e) {
                     Toast.makeText(getApplicationContext(),"Bad Response",Toast.LENGTH_SHORT)
