@@ -54,4 +54,6 @@
     <string name="my_profile_activity_public">Public</string>
     <string name="my_profile_activity_save_successful">Saved your profile</string>
     <string name="my_profile_activity_save_failure">Failed to save your profile</string>
+
+    <string name="view_profile_activity_load_empty">Users profile is empty</string>
 </resources>

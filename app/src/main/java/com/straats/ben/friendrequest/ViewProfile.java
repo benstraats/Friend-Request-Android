@@ -29,15 +29,8 @@ public class ViewProfile extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //TODO: remove this button if it ends up not being used
         FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_SHORT)
-                        .setAction("Action", null).show();
-            }
-        });
-
         fab.setVisibility(View.INVISIBLE);
 
         profileText = findViewById(R.id.profileText);
@@ -70,7 +63,7 @@ public class ViewProfile extends AppCompatActivity {
                     profileText.setText(text);
 
                 } catch (JSONException e) {
-                    profileText.setText("User doesn\'t have a profile");
+                    profileText.setText(R.string.view_profile_activity_load_empty);
                 }
             }
 
