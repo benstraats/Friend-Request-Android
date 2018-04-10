@@ -60,7 +60,7 @@ public class FindFriends extends AppCompatActivity {
                 builder.setMessage(R.string.find_friends_activity_add_user_message);
 
                 try {
-                    builder.setTitle(R.string.find_friends_activity_add_user_title_partial +
+                    builder.setTitle(getResources().getString(R.string.find_friends_activity_add_user_title_partial) +
                             searchedUsers.getJSONObject(position).getString("name") + "?");
                 } catch ( JSONException e) {
                     builder.setTitle(R.string.find_friends_activity_add_user_title_full);
