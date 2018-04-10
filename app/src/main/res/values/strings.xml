@@ -30,6 +30,13 @@
     <string name="landing_activity_add_friends">Add Friends</string>
 
     <string name="find_friends_activity_search">Search</string>
+    <string name="find_friends_add_user_message">Are you sure you want to add this user?</string>
+    <string name="find_friends_add_user_title_partial">Add </string>
+    <string name="find_friends_add_user_title_full">Add User?</string>
+    <string name="find_friends_add_user_yes">Yes</string>
+    <string name="find_friends_add_user_no">No</string>
+    <string name="find_friends_add_user_successful">Successfully added </string>
+    <string name="find_friends_add_user_failure">Failed to add user</string>
 
     <string name="my_profile_activity_add_row">Add Row</string>
     <string name="my_profile_activity_platform">Platform</string>

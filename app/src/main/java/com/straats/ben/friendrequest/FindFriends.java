@@ -57,27 +57,28 @@ public class FindFriends extends AppCompatActivity {
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
 
-                builder.setMessage("Are you sure you want to add this user?");
+                builder.setMessage(R.string.find_friends_add_user_message);
 
                 try {
-                    builder.setTitle("Add " + searchedUsers.getJSONObject(position)
-                            .getString("name") + "?");
+                    builder.setTitle(R.string.find_friends_add_user_title_partial +
+                            searchedUsers.getJSONObject(position).getString("name") + "?");
                 } catch ( JSONException e) {
-                    builder.setTitle("Add user?");
+                    builder.setTitle(R.string.find_friends_add_user_title_full);
                 }
 
-                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                builder.setPositiveButton(R.string.find_friends_add_user_yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         //Attempt to add the user
                         try {
-                            String userID = searchedUsers.getJSONObject(position).getString("_id");
+                            String userID = searchedUsers.getJSONObject(position)
+                                    .getString("_id");
                             requestUser(userID);
                         } catch (JSONException e) {
-                            Toast.makeText(getApplicationContext(),"Bad Response", Toast.LENGTH_SHORT)
-                                    .show();
+                            Toast.makeText(getApplicationContext(),R.string.bad_response,
+                                    Toast.LENGTH_SHORT).show();
                         }
                     }
-                }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                }).setNegativeButton(R.string.find_friends_add_user_no, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         // do nothing
                     }
@@ -157,8 +158,8 @@ public class FindFriends extends AppCompatActivity {
 
                     adapter.notifyDataSetChanged();
                 } catch (JSONException e) {
-                    Toast.makeText(getApplicationContext(),"Bad Response", Toast.LENGTH_SHORT)
-                            .show();
+                    Toast.makeText(getApplicationContext(),R.string.bad_response,
+                            Toast.LENGTH_SHORT).show();
                     currentlySearching = false;
                 }
             }
@@ -172,7 +173,8 @@ public class FindFriends extends AppCompatActivity {
             }
         };
 
-        String url = vw.usersURL + "?$search=" + search + "&$limit=" + searchLimit + "&$skip=" + searchSkip;
+        String url = vw.usersURL + "?$search=" + search + "&$limit=" + searchLimit + "&$skip=" +
+                searchSkip;
 
         showSearchLoading();
         vw.request(getApplication(), url, vw.searchUsersTAG, Request.Method.GET, null,
@@ -186,7 +188,8 @@ public class FindFriends extends AppCompatActivity {
         VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
-                Toast.makeText(getApplicationContext(),"Successfully added " + userID,
+                Toast.makeText(getApplicationContext(),
+                        R.string.find_friends_add_user_successful + userID,
                         Toast.LENGTH_SHORT).show();
             }
 
@@ -203,7 +206,7 @@ public class FindFriends extends AppCompatActivity {
         try {
             body.put("requesteeID", userID);
         } catch (JSONException e) {
-            Toast.makeText(getApplicationContext(), "Failed to request user",
+            Toast.makeText(getApplicationContext(), R.string.find_friends_add_user_failure,
                     Toast.LENGTH_SHORT).show();
             return;
         }
