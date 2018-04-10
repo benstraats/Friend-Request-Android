@@ -93,8 +93,8 @@ public class Profile extends AppCompatActivity {
                     profileID = data.getJSONObject(0).getString("_id");
 
                 } catch (JSONException e) {
-                    Toast.makeText(getApplicationContext(), "No profile found",
-                            Toast.LENGTH_SHORT).show();
+                    //Means no profile was found
+                    //TODO: add in checking that this is true
                 }
             }
 
@@ -123,13 +123,13 @@ public class Profile extends AppCompatActivity {
                 try {
                     profileID = response.getString("_id");
 
-                    Snackbar.make(v, "Saved your profile", Snackbar.LENGTH_SHORT)
-                            .setAction("Action", null).show();
+                    Snackbar.make(v, R.string.my_profile_activity_save_successful,
+                            Snackbar.LENGTH_SHORT).setAction("Action", null).show();
 
                     creatingProfile = false;
                 } catch (JSONException e) {
-                    Toast.makeText(getApplicationContext(), "Failed to save profile",
-                            Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),
+                            R.string.my_profile_activity_save_failure, Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -245,8 +245,8 @@ public class Profile extends AppCompatActivity {
                     body.accumulate("profile", jsonRow);
                 }
             } catch(JSONException e) {
-                Toast.makeText(getApplicationContext(), "Failed to parse profile",
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.parse_failure, Toast.LENGTH_SHORT)
+                        .show();
                 return null;
             }
         }

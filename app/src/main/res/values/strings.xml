@@ -52,4 +52,6 @@
     <string name="my_profile_activity_handle">Handle</string>
     <string name="my_profile_activity_delete_row">Delete</string>
     <string name="my_profile_activity_public">Public</string>
+    <string name="my_profile_activity_save_successful">Saved your profile</string>
+    <string name="my_profile_activity_save_failure">Failed to save your profile</string>
 </resources>
