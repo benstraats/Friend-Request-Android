@@ -176,8 +176,8 @@ public class Landing extends AppCompatActivity {
 
                     adapter.notifyDataSetChanged();
                 } catch (JSONException e) {
-                    Toast.makeText(getApplicationContext(), "Bad Response", Toast.LENGTH_SHORT)
-                            .show();
+                    Toast.makeText(getApplicationContext(), R.string.bad_response,
+                            Toast.LENGTH_SHORT).show();
                     currentlyLoading = false;
                 }
             }
