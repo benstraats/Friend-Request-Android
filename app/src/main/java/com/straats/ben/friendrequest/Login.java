@@ -98,47 +98,49 @@ public class Login extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), R.string.login_activity_password_too_long,
                     Toast.LENGTH_SHORT).show();
         }
+        else {
 
-        final VolleyWrapper vw = VolleyWrapper.getInstance(getApplicationContext());
+            final VolleyWrapper vw = VolleyWrapper.getInstance(getApplicationContext());
 
-        VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
-            @Override
-            public void onSuccess(JSONObject response) {
-                try {
-                    Utils.accessToken = response.getString("accessToken");
-                    Utils.userEmail = username;
-                    getCurrentUserInfo(username);
-                    Intent intent = new Intent(getApplicationContext(), Landing.class);
-                    startActivity(intent);
-                } catch (JSONException e) {
-                    Toast.makeText(getApplicationContext(), R.string.bad_response,
-                            Toast.LENGTH_SHORT).show();
-                    hideLoading();
+            VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
+                @Override
+                public void onSuccess(JSONObject response) {
+                    try {
+                        Utils.accessToken = response.getString("accessToken");
+                        Utils.userEmail = username;
+                        getCurrentUserInfo(username);
+                        Intent intent = new Intent(getApplicationContext(), Landing.class);
+                        startActivity(intent);
+                    } catch (JSONException e) {
+                        Toast.makeText(getApplicationContext(), R.string.bad_response,
+                                Toast.LENGTH_SHORT).show();
+                        hideLoading();
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(VolleyError error) {
-                hideLoading();
-                Toast.makeText(getApplicationContext(), Utils.decodeError(error),
+                @Override
+                public void onFailure(VolleyError error) {
+                    hideLoading();
+                    Toast.makeText(getApplicationContext(), Utils.decodeError(error),
+                            Toast.LENGTH_SHORT).show();
+                }
+            };
+
+            JSONObject body = new JSONObject();
+            try {
+                body.put("strategy", "local");
+                body.put("email", username);
+                body.put("password", password);
+            } catch (JSONException e) {
+                Toast.makeText(getApplicationContext(), R.string.login_activity_failed_to_login,
                         Toast.LENGTH_SHORT).show();
+                return;
             }
-        };
 
-        JSONObject body = new JSONObject();
-        try {
-            body.put("strategy", "local");
-            body.put("email", username);
-            body.put("password", password);
-        } catch (JSONException e) {
-            Toast.makeText(getApplicationContext(), R.string.login_activity_failed_to_login,
-                    Toast.LENGTH_SHORT).show();
-            return;
+            showLoading();
+            vw.request(getApplication(), vw.authenticationURL, vw.loginTAG,
+                    Request.Method.POST, body, callback);
         }
-
-        showLoading();
-        vw.request(getApplication(), vw.authenticationURL, vw.loginTAG,
-                Request.Method.POST, body, callback);
     }
 
     private void signMeUp(final String username, String name, final String password,
