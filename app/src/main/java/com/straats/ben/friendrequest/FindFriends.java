@@ -57,16 +57,16 @@ public class FindFriends extends AppCompatActivity {
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
 
-                builder.setMessage(R.string.find_friends_add_user_message);
+                builder.setMessage(R.string.find_friends_activity_add_user_message);
 
                 try {
-                    builder.setTitle(R.string.find_friends_add_user_title_partial +
+                    builder.setTitle(R.string.find_friends_activity_add_user_title_partial +
                             searchedUsers.getJSONObject(position).getString("name") + "?");
                 } catch ( JSONException e) {
-                    builder.setTitle(R.string.find_friends_add_user_title_full);
+                    builder.setTitle(R.string.find_friends_activity_add_user_title_full);
                 }
 
-                builder.setPositiveButton(R.string.find_friends_add_user_yes, new DialogInterface.OnClickListener() {
+                builder.setPositiveButton(R.string.find_friends_activity_add_user_yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         //Attempt to add the user
                         try {
@@ -78,7 +78,7 @@ public class FindFriends extends AppCompatActivity {
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
-                }).setNegativeButton(R.string.find_friends_add_user_no, new DialogInterface.OnClickListener() {
+                }).setNegativeButton(R.string.find_friends_activity_add_user_no, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         // do nothing
                     }
@@ -189,7 +189,7 @@ public class FindFriends extends AppCompatActivity {
             @Override
             public void onSuccess(JSONObject response) {
                 Toast.makeText(getApplicationContext(),
-                        R.string.find_friends_add_user_successful + userID,
+                        R.string.find_friends_activity_add_user_successful + userID,
                         Toast.LENGTH_SHORT).show();
             }
 
@@ -206,7 +206,7 @@ public class FindFriends extends AppCompatActivity {
         try {
             body.put("requesteeID", userID);
         } catch (JSONException e) {
-            Toast.makeText(getApplicationContext(), R.string.find_friends_add_user_failure,
+            Toast.makeText(getApplicationContext(), R.string.find_friends_activity_add_user_failure,
                     Toast.LENGTH_SHORT).show();
             return;
         }
