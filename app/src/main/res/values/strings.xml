@@ -3,4 +3,57 @@
     <string name="title_activity_landing">My Friends</string>
     <string name="title_activity_profile">My Profile</string>
     <string name="title_activity_view_profile">Friends Profile</string>
+
+    <string name="bad_response">Bad Response</string>
+    <string name="parse_failure">Failed to parse data</string>
+
+    <string name="login_activity_welcome">Welcome to Friend Request</string>
+    <string name="login_activity_login">Login</string>
+    <string name="login_activity_signup">Sign Up</string>
+    <string name="login_activity_confirm">Confirm</string>
+    <string name="login_activity_back_to_login">Back to Login</string>
+    <string name="login_activity_full_name">Full Name</string>
+    <string name="login_activity_username">Username</string>
+    <string name="login_activity_password">Password</string>
+    <string name="login_activity_retype_password">Retype Password</string>
+    <string name="login_activity_failed_to_login">Failed to log user in</string>
+    <string name="login_activity_username_too_short">Username too short</string>
+    <string name="login_activity_username_too_long">Username too long</string>
+    <string name="login_activity_name_too_short">Name too short</string>
+    <string name="login_activity_name_too_long">Name too long</string>
+    <string name="login_activity_password_too_short">Password too short</string>
+    <string name="login_activity_password_too_long">Password too long</string>
+    <string name="login_activity_password_dont_match">Passwords don\'t match</string>
+    <string name="login_activity_failed_to_signup">Failed to Sign Up</string>
+
+
+    <string name="landing_activity_pending_friends">Pending Friends</string>
+    <string name="landing_activity_add_friends">Add Friends</string>
+
+    <string name="find_friends_activity_search">Search</string>
+    <string name="find_friends_activity_add_user_message">Are you sure you want to add this user?</string>
+    <string name="find_friends_activity_add_user_title_partial">Add </string>
+    <string name="find_friends_activity_add_user_title_full">Add User?</string>
+    <string name="find_friends_activity_add_user_yes">Yes</string>
+    <string name="find_friends_activity_add_user_no">No</string>
+    <string name="find_friends_activity_add_user_successful">Successfully added user</string>
+    <string name="find_friends_activity_add_user_failure">Failed to add user</string>
+
+    <string name="pending_friends_activity_add_user_message">Are you sure you want to accept this friend request?</string>
+    <string name="pending_friends_activity_add_user_title">Accept Request?</string>
+    <string name="pending_friends_activity_add_user_yes">Accept</string>
+    <string name="pending_friends_activity_add_user_no">Reject</string>
+    <string name="pending_friends_activity_add_user_success">Successfully added user</string>
+    <string name="pending_friends_activity_delete_request_success">Successfully deleted request</string>
+    <string name="pending_friends_activity_">asdf</string>
+
+    <string name="my_profile_activity_add_row">Add Row</string>
+    <string name="my_profile_activity_platform">Platform</string>
+    <string name="my_profile_activity_handle">Handle</string>
+    <string name="my_profile_activity_delete_row">Delete</string>
+    <string name="my_profile_activity_public">Public</string>
+    <string name="my_profile_activity_save_successful">Saved your profile</string>
+    <string name="my_profile_activity_save_failure">Failed to save your profile</string>
+
+    <string name="view_profile_activity_load_empty">Users profile is empty</string>
 </resources>

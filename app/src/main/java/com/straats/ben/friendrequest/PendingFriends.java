@@ -52,16 +52,15 @@ public class PendingFriends extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
 
-                builder.setMessage("Are you sure you want to accept this friend request?");
-                builder.setTitle("Accept request?");
+                builder.setMessage(R.string.pending_friends_activity_add_user_message);
+                builder.setTitle(R.string.pending_friends_activity_add_user_title);
 
-                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                builder.setPositiveButton(R.string.pending_friends_activity_add_user_yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         acceptRequest(position);
                     }
-                }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                }).setNegativeButton(R.string.pending_friends_activity_add_user_no, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        //Send delete request
                         rejectRequest(position);
                     }
                 });
@@ -123,7 +122,8 @@ public class PendingFriends extends AppCompatActivity {
 
                     adapter.notifyDataSetChanged();
                 } catch (JSONException e) {
-                    Toast.makeText(getApplicationContext(),"Bad Response",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), R.string.bad_response,
+                            Toast.LENGTH_SHORT).show();
                     currentlyLoading = false;
                 }
             }
@@ -131,7 +131,8 @@ public class PendingFriends extends AppCompatActivity {
             @Override
             public void onFailure(VolleyError error) {
                 hideSearchLoading();
-                Toast.makeText(getApplicationContext(), Utils.decodeError(error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), Utils.decodeError(error),
+                        Toast.LENGTH_SHORT).show();
                 currentlyLoading = false;
             }
         };
@@ -151,7 +152,8 @@ public class PendingFriends extends AppCompatActivity {
         try {
             requestID = requestedUsers.getJSONObject(position).getString("_id");
         } catch (JSONException e) {
-            Toast.makeText(getApplicationContext(),"Failed to parse requested user",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.parse_failure, Toast.LENGTH_SHORT)
+                    .show();
             return;
         }
 
@@ -160,12 +162,15 @@ public class PendingFriends extends AppCompatActivity {
         VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
-                Toast.makeText(getApplicationContext(),"Successfully added user", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),
+                        R.string.pending_friends_activity_add_user_success, Toast.LENGTH_SHORT)
+                        .show();
             }
 
             @Override
             public void onFailure(VolleyError error) {
-                Toast.makeText(getApplicationContext(), Utils.decodeError(error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), Utils.decodeError(error),
+                        Toast.LENGTH_SHORT).show();
             }
         };
 
@@ -174,8 +179,8 @@ public class PendingFriends extends AppCompatActivity {
         try {
             body.put("requestID", finalRequestID);
         } catch (JSONException e) {
-            Toast.makeText(getApplicationContext(), "Failed to sign up",
-                    Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.parse_failure, Toast.LENGTH_SHORT)
+                    .show();
             return;
         }
 
@@ -189,14 +194,16 @@ public class PendingFriends extends AppCompatActivity {
         try {
             requestID = requestedUsers.getJSONObject(position).getString("_id");
         } catch (JSONException e) {
-            Toast.makeText(getApplicationContext(),"Failed to parse requested user",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),R.string.parse_failure,Toast.LENGTH_SHORT).show();
             return;
         }
 
         VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
-                Toast.makeText(getApplicationContext(),"Successfully deleted request", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),
+                        R.string.pending_friends_activity_delete_request_success,
+                        Toast.LENGTH_SHORT).show();
             }
 
             @Override
