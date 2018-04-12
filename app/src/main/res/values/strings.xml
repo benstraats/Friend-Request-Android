@@ -56,4 +56,9 @@
     <string name="my_profile_activity_save_failure">Failed to save your profile</string>
 
     <string name="view_profile_activity_load_empty">Users profile is empty</string>
+    <string name="view_profile_activity_delete_title">Delete Friend?</string>
+    <string name="view_profile_activity_delete_message">Are you sure you want to remove this friend?</string>
+    <string name="view_profile_activity_delete_yes">Delete</string>
+    <string name="view_profile_activity_delete_no">Cancel</string>
+    <string name="view_profile_activity_delete_success">Successfully deleted friend</string>
 </resources>

@@ -59,14 +59,16 @@ public class Landing extends AppCompatActivity {
 
                     String user1 = friendUsers.getJSONObject(position).getString("user1");
                     String user2 = friendUsers.getJSONObject(position).getString("user2");
+                    String friendID = friendUsers.getJSONObject(position).getString("_id");
 
-                    String friendID = user1;
+                    String friendUserID = user1;
 
                     if (user1.equals(Utils.userID)) {
-                        friendID = user2;
+                        friendUserID = user2;
                     }
 
                     Intent intent = new Intent(getApplicationContext(), ViewProfile.class);
+                    intent.putExtra("friendUserID", friendUserID);
                     intent.putExtra("friendID", friendID);
                     startActivity(intent);
                 } catch (JSONException e) {

@@ -1,8 +1,10 @@
 package com.straats.ben.friendrequest;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -21,6 +23,7 @@ public class ViewProfile extends AppCompatActivity {
 
     private TextView profileText;
     private ProgressBar loadingBar;
+    private String friendID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,19 +32,40 @@ public class ViewProfile extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //TODO: remove this button if it ends up not being used
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setVisibility(View.INVISIBLE);
-
         profileText = findViewById(R.id.profileText);
         loadingBar = findViewById(R.id.loadingBar);
 
-        String friendID = getIntent().getExtras().getString("friendID");
+        String friendUserID = getIntent().getExtras().getString("friendUserID");
+        friendID = getIntent().getExtras().getString("friendID");
 
-        getProfile(friendID);
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+
+                builder.setTitle(R.string.view_profile_activity_delete_title);
+                builder.setMessage(R.string.view_profile_activity_delete_message);
+
+                builder.setPositiveButton(R.string.view_profile_activity_delete_yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        deleteFriend(friendID);
+                    }
+                }).setNegativeButton(R.string.view_profile_activity_delete_no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        //Do nothing
+                    }
+                });
+
+                builder.show();
+            }
+        });
+        fab.setImageResource(android.R.drawable.ic_delete);
+
+        getProfile(friendUserID);
     }
 
-    private void getProfile(final String friendID) {
+    private void getProfile(final String friendUserID) {
         final VolleyWrapper vw = VolleyWrapper.getInstance(getApplicationContext());
         VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
             @Override
@@ -74,11 +98,33 @@ public class ViewProfile extends AppCompatActivity {
             }
         };
 
-        String url = vw.profileURL + "?userID=" + friendID;
+        String url = vw.profileURL + "?userID=" + friendUserID;
 
         showLoading();
         vw.request(getApplication(), url, vw.viewProfileTAG,
                 Request.Method.GET, null, callback);
+    }
+
+    private void deleteFriend(final String friendID) {
+        final VolleyWrapper vw = VolleyWrapper.getInstance(getApplicationContext());
+        VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                Toast.makeText(getApplicationContext(), R.string.view_profile_activity_delete_success,
+                        Toast.LENGTH_SHORT).show();
+                finish();
+            }
+
+            @Override
+            public void onFailure(VolleyError error) {
+                Toast.makeText(getApplicationContext(), Utils.decodeError(error), Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        String url = vw.friendsURL + "/" + friendID;
+
+        vw.request(getApplication(), url, vw.viewProfileTAG,
+                Request.Method.DELETE, null, callback);
     }
 
     private void showLoading() {
