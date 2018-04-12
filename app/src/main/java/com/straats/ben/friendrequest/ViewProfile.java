@@ -112,7 +112,7 @@ public class ViewProfile extends AppCompatActivity {
             public void onSuccess(JSONObject response) {
                 Toast.makeText(getApplicationContext(), R.string.view_profile_activity_delete_success,
                         Toast.LENGTH_SHORT).show();
-                //TODO: transport back to landing activity
+                finish();
             }
 
             @Override
