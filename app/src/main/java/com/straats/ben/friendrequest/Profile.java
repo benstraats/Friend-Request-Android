@@ -79,6 +79,7 @@ public class Profile extends AppCompatActivity {
         String profileUserID = Utils.userID;
         Bundle extras = getIntent().getExtras();
 
+        //viewing a friends profile
         if (extras != null) {
             ownProfile = false;
 
@@ -90,14 +91,14 @@ public class Profile extends AppCompatActivity {
                 public void onClick(View view) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
 
-                    builder.setTitle(R.string.view_profile_activity_delete_title);
-                    builder.setMessage(R.string.view_profile_activity_delete_message);
+                    builder.setTitle(R.string.profile_activity_delete_title);
+                    builder.setMessage(R.string.profile_activity_delete_message);
 
-                    builder.setPositiveButton(R.string.view_profile_activity_delete_yes, new DialogInterface.OnClickListener() {
+                    builder.setPositiveButton(R.string.profile_activity_delete_yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             deleteFriend(friendID);
                         }
-                    }).setNegativeButton(R.string.view_profile_activity_delete_no, new DialogInterface.OnClickListener() {
+                    }).setNegativeButton(R.string.profile_activity_delete_no, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             //Do nothing
                         }
@@ -172,7 +173,7 @@ public class Profile extends AppCompatActivity {
         VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
-                Toast.makeText(getApplicationContext(), R.string.view_profile_activity_delete_success,
+                Toast.makeText(getApplicationContext(), R.string.profile_activity_delete_success,
                         Toast.LENGTH_SHORT).show();
                 finish();
             }
@@ -199,7 +200,7 @@ public class Profile extends AppCompatActivity {
                 try {
                     profileID = response.getString("_id");
 
-                    Snackbar.make(v, R.string.my_profile_activity_save_successful,
+                    Snackbar.make(v, R.string.profile_activity_save_successful,
                             Snackbar.LENGTH_SHORT).setAction("Action", null).show();
 
                     parseProfile(response, false);
@@ -207,7 +208,7 @@ public class Profile extends AppCompatActivity {
                     creatingProfile = false;
                 } catch (JSONException e) {
                     Toast.makeText(getApplicationContext(),
-                            R.string.my_profile_activity_save_failure, Toast.LENGTH_SHORT).show();
+                            R.string.profile_activity_save_failure, Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -245,7 +246,7 @@ public class Profile extends AppCompatActivity {
                 profileID = response.getString("_id");
                 profile = response.getJSONArray("profile");
             } catch (JSONException e2) {
-                profileText.setText(R.string.view_profile_activity_load_empty);
+                profileText.setText(R.string.profile_activity_load_empty);
                 return;
             }
         }
@@ -268,7 +269,7 @@ public class Profile extends AppCompatActivity {
             profileText.setText(text);
 
         } catch (JSONException e) {
-            profileText.setText(R.string.view_profile_activity_load_empty);
+            profileText.setText(R.string.profile_activity_load_empty);
         }
     }
 

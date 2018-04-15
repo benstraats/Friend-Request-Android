@@ -26,7 +26,6 @@
     <string name="login_activity_password_dont_match">Passwords don\'t match</string>
     <string name="login_activity_failed_to_signup">Failed to Sign Up</string>
 
-
     <string name="landing_activity_pending_friends">Pending Friends</string>
     <string name="landing_activity_add_friends">Add Friends</string>
 
@@ -45,20 +44,18 @@
     <string name="pending_friends_activity_add_user_no">Reject</string>
     <string name="pending_friends_activity_add_user_success">Successfully added user</string>
     <string name="pending_friends_activity_delete_request_success">Successfully deleted request</string>
-    <string name="pending_friends_activity_">asdf</string>
 
-    <string name="my_profile_activity_add_row">Add Row</string>
-    <string name="my_profile_activity_platform">Platform</string>
-    <string name="my_profile_activity_handle">Handle</string>
-    <string name="my_profile_activity_delete_row">Delete</string>
-    <string name="my_profile_activity_public">Public</string>
-    <string name="my_profile_activity_save_successful">Saved your profile</string>
-    <string name="my_profile_activity_save_failure">Failed to save your profile</string>
-
-    <string name="view_profile_activity_load_empty">Users profile is empty</string>
-    <string name="view_profile_activity_delete_title">Delete Friend?</string>
-    <string name="view_profile_activity_delete_message">Are you sure you want to remove this friend?</string>
-    <string name="view_profile_activity_delete_yes">Delete</string>
-    <string name="view_profile_activity_delete_no">Cancel</string>
-    <string name="view_profile_activity_delete_success">Successfully deleted friend</string>
+    <string name="profile_activity_add_row">Add Row</string>
+    <string name="profile_activity_platform">Platform</string>
+    <string name="profile_activity_handle">@Handle</string>
+    <string name="profile_activity_delete_row">Delete</string>
+    <string name="profile_activity_public">Public</string>
+    <string name="profile_activity_save_successful">Saved your profile</string>
+    <string name="profile_activity_save_failure">Failed to save your profile</string>
+    <string name="profile_activity_load_empty">Users profile is empty</string>
+    <string name="profile_activity_delete_title">Delete Friend?</string>
+    <string name="profile_activity_delete_message">Are you sure you want to remove this friend?</string>
+    <string name="profile_activity_delete_yes">Delete</string>
+    <string name="profile_activity_delete_no">Cancel</string>
+    <string name="profile_activity_delete_success">Successfully deleted friend</string>
 </resources>
