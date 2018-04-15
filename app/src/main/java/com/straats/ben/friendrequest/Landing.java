@@ -32,9 +32,6 @@ public class Landing extends AppCompatActivity {
 
     private JSONArray friendUsers;
 
-    private Button pendingFriendsButton;
-    private Button addFriendsButton;
-
     private ProgressBar loadingBar;
 
     private boolean doneUserLoad = true;
@@ -84,29 +81,20 @@ public class Landing extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), Profile.class);
+                Intent intent = new Intent(getApplicationContext(), FindFriends.class);
                 startActivity(intent);
             }
         });
-        fab.setImageResource(android.R.drawable.ic_menu_edit);
+        fab.setImageResource(android.R.drawable.ic_menu_search);
 
-        pendingFriendsButton = findViewById(R.id.PendingFriendsButton);
-        addFriendsButton = findViewById(R.id.AddFriendsButton);
+        Button myProfileButton = findViewById(R.id.myProfileButton);
 
         loadingBar = findViewById(R.id.loadingBar);
 
-        pendingFriendsButton.setOnClickListener(new View.OnClickListener() {
+        myProfileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), PendingFriends.class);
-                startActivity(intent);
-            }
-        });
-
-        addFriendsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), FindFriends.class);
+                Intent intent = new Intent(getApplicationContext(), Profile.class);
                 startActivity(intent);
             }
         });
