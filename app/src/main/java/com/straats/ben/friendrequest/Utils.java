@@ -24,6 +24,27 @@ public class Utils {
 
     protected static String accessToken = null;
 
+    //Not sure if these constants should be in Utils or VolleyWrapper
+    //URLs Section
+    protected final static String baseURL = "http://api.friendrequest.ca/";
+    protected final static String usersURL = baseURL + "users";
+    protected final static String authenticationURL = baseURL + "authentication";
+    protected final static String friendsURL = baseURL + "friends";
+    protected final static String requestsURL = baseURL + "requests";
+    protected final static String profileURL = baseURL + "profile";
+
+    //TAGs section
+    protected final static String signUpTAG = "Sign Up";
+    protected final static String loginTAG = "Log In";
+    protected final static String getFriendsTAG = "Get My Friends";
+    protected final static String searchUsersTAG = "Search Users";
+    protected final static String requestUserTAG = "Request User";
+    protected final static String getRequestsTAG = "Get My Requests";
+    protected final static String acceptRequestTAG = "Accept Request";
+    protected final static String rejectRequestTAG = "Reject Request";
+    protected final static String viewProfileTAG = "View Profile";
+    protected final static String saveProfileTAG = "Save Profile";
+
     protected static String getUserInfo(String usersID, JSONObject users) {
         try {
             JSONObject data = users.getJSONObject("data");

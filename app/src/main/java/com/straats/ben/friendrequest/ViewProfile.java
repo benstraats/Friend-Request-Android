@@ -98,10 +98,10 @@ public class ViewProfile extends AppCompatActivity {
             }
         };
 
-        String url = vw.profileURL + "?userID=" + friendUserID;
+        String url = Utils.profileURL + "?userID=" + friendUserID;
 
         showLoading();
-        vw.request(getApplication(), url, vw.viewProfileTAG,
+        vw.request(getApplication(), url, Utils.viewProfileTAG,
                 Request.Method.GET, null, callback);
     }
 
@@ -121,9 +121,9 @@ public class ViewProfile extends AppCompatActivity {
             }
         };
 
-        String url = vw.friendsURL + "/" + friendID;
+        String url = Utils.friendsURL + "/" + friendID;
 
-        vw.request(getApplication(), url, vw.viewProfileTAG,
+        vw.request(getApplication(), url, Utils.viewProfileTAG,
                 Request.Method.DELETE, null, callback);
     }
 

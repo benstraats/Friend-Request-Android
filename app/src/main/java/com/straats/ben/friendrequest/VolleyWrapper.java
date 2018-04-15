@@ -24,27 +24,6 @@ public class VolleyWrapper {
     private static VolleyWrapper instance = null;
     private static RequestQueue queue;
 
-    //Not sure if these constants should be in Utils or VolleyWrapper
-    //URLs Section
-    protected final String baseURL = "http://api.friendrequest.ca/";
-    protected final String usersURL = baseURL + "users";
-    protected final String authenticationURL = baseURL + "authentication";
-    protected final String friendsURL = baseURL + "friends";
-    protected final String requestsURL = baseURL + "requests";
-    protected final String profileURL = baseURL + "profile";
-
-    //TAGs section
-    protected final String signUpTAG = "Sign Up";
-    protected final String loginTAG = "Log In";
-    protected final String getFriendsTAG = "Get My Friends";
-    protected final String searchUsersTAG = "Search Users";
-    protected final String requestUserTAG = "Request User";
-    protected final String getRequestsTAG = "Get My Requests";
-    protected final String acceptRequestTAG = "Accept Request";
-    protected final String rejectRequestTAG = "Reject Request";
-    protected final String viewProfileTAG = "View Profile";
-    protected final String saveProfileTAG = "Save Profile";
-
     private VolleyWrapper(Context c) {
         queue = Volley.newRequestQueue(c);
     }
@@ -68,7 +47,7 @@ public class VolleyWrapper {
         headers.put("Accept", "application/json");
         headers.put("Content-Type", "application/json");
 
-        if (!(tag.equals(signUpTAG) || tag.equals(loginTAG))) {
+        if (!(tag.equals(Utils.signUpTAG) || tag.equals(Utils.loginTAG))) {
             headers.put("Authorization", "Bearer " + Utils.accessToken);
         }
 

@@ -106,10 +106,10 @@ public class Profile extends AppCompatActivity {
             }
         };
 
-        String url = vw.profileURL + "?userID=" + currUserID;
+        String url = Utils.profileURL + "?userID=" + currUserID;
 
         showLoading();
-        vw.request(getApplication(), url, vw.viewProfileTAG, Request.Method.GET, null,
+        vw.request(getApplication(), url, Utils.viewProfileTAG, Request.Method.GET, null,
                 callback);
     }
 
@@ -141,7 +141,7 @@ public class Profile extends AppCompatActivity {
             }
         };
 
-        String url = vw.profileURL;
+        String url = Utils.profileURL;
         int method = Request.Method.POST;
 
         if (!creatingProfile) {
@@ -150,7 +150,7 @@ public class Profile extends AppCompatActivity {
         }
 
         showLoading();
-        vw.request(getApplication(), url, vw.saveProfileTAG, method,
+        vw.request(getApplication(), url, Utils.saveProfileTAG, method,
                 getProfileJSON(), callback);
     }
 

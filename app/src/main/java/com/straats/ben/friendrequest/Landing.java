@@ -193,9 +193,9 @@ public class Landing extends AppCompatActivity {
             }
         };
 
-        String url = vw.friendsURL + "?$limit=" + limit + "&$skip=" + skip;
+        String url = Utils.friendsURL + "?$limit=" + limit + "&$skip=" + skip;
         showLoading();
-        vw.request(getApplication(), url, vw.getFriendsTAG, Request.Method.GET, null, callback);
+        vw.request(getApplication(), url, Utils.getFriendsTAG, Request.Method.GET, null, callback);
     }
 
     private void showLoading() {

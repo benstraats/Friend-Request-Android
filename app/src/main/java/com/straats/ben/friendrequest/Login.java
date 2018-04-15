@@ -138,7 +138,7 @@ public class Login extends AppCompatActivity {
             }
 
             showLoading();
-            vw.request(getApplication(), vw.authenticationURL, vw.loginTAG,
+            vw.request(getApplication(), Utils.authenticationURL, Utils.loginTAG,
                     Request.Method.POST, body, callback);
         }
     }
@@ -205,7 +205,7 @@ public class Login extends AppCompatActivity {
             };
 
             showLoading();
-            vw.request(getApplication(), vw.usersURL, vw.signUpTAG,
+            vw.request(getApplication(), Utils.usersURL, Utils.signUpTAG,
                     Request.Method.POST, body, callback);
 
         }
@@ -237,9 +237,9 @@ public class Login extends AppCompatActivity {
             }
         };
 
-        String url = vw.usersURL + "?email=" + userEmail;
+        String url = Utils.usersURL + "?email=" + userEmail;
 
-        vw.request(getApplication(), url, vw.searchUsersTAG,
+        vw.request(getApplication(), url, Utils.searchUsersTAG,
                 Request.Method.GET, null, callback);
     }
 
