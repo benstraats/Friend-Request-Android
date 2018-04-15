@@ -67,7 +67,7 @@ public class Landing extends AppCompatActivity {
                         friendUserID = user2;
                     }
 
-                    Intent intent = new Intent(getApplicationContext(), ViewProfile.class);
+                    Intent intent = new Intent(getApplicationContext(), Profile.class);
                     intent.putExtra("friendUserID", friendUserID);
                     intent.putExtra("friendID", friendID);
                     startActivity(intent);

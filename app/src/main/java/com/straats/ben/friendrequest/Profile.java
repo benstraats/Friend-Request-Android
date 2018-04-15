@@ -1,9 +1,11 @@
 package com.straats.ben.friendrequest;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
@@ -16,8 +18,10 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -36,8 +40,12 @@ public class Profile extends AppCompatActivity {
     TableRow firstRow;
     ProgressBar loadingBar;
     FloatingActionButton fab;
+    TextView profileText;
+    ScrollView editScrollView;
+    ScrollView textScrollView;
 
     boolean creatingProfile = true;
+    boolean ownProfile = true;
     String profileID = "";
 
     @Override
@@ -48,18 +56,16 @@ public class Profile extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            saveProfile(view);
-            }
-        });
 
         fab.setImageResource(android.R.drawable.ic_menu_save);
 
         addRowButton = findViewById(R.id.addRowButton);
         mainTable = findViewById(R.id.profileTable);
         loadingBar = findViewById(R.id.loadingBar);
+        profileText = findViewById(R.id.profileText);
+
+        editScrollView = findViewById(R.id.editScroll);
+        textScrollView = findViewById(R.id.textScroll);
 
         addRowButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,7 +74,72 @@ public class Profile extends AppCompatActivity {
             }
         });
 
-        getProfile(Utils.userID);
+        editScrollView.setVisibility(View.GONE);
+
+        String profileUserID = Utils.userID;
+        Bundle extras = getIntent().getExtras();
+
+        if (extras != null) {
+            ownProfile = false;
+
+            profileUserID = getIntent().getExtras().getString("friendUserID");
+            final String friendID = getIntent().getExtras().getString("friendID", null);
+
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+
+                    builder.setTitle(R.string.view_profile_activity_delete_title);
+                    builder.setMessage(R.string.view_profile_activity_delete_message);
+
+                    builder.setPositiveButton(R.string.view_profile_activity_delete_yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            deleteFriend(friendID);
+                        }
+                    }).setNegativeButton(R.string.view_profile_activity_delete_no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            //Do nothing
+                        }
+                    });
+
+                    builder.show();
+                }
+            });
+            fab.setImageResource(android.R.drawable.ic_delete);
+
+        } else {
+            ownProfile = true;
+
+            startNonEditMode();
+        }
+
+        getProfile(profileUserID);
+    }
+
+    private void startEditMode() {
+        fab.setImageResource(android.R.drawable.ic_menu_save);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveProfile(view);
+                startNonEditMode();
+            }
+        });
+        editScrollView.setVisibility(View.VISIBLE);
+        textScrollView.setVisibility(View.GONE);
+    }
+
+    private void startNonEditMode() {
+        fab.setImageResource(android.R.drawable.ic_menu_edit);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startEditMode();
+            }
+        });
+        editScrollView.setVisibility(View.GONE);
+        textScrollView.setVisibility(View.VISIBLE);
     }
 
     private void getProfile(final String currUserID) {
@@ -77,25 +148,8 @@ public class Profile extends AppCompatActivity {
             @Override
             public void onSuccess(JSONObject response) {
                 hideLoading();
-                try {
-                    JSONArray data = response.getJSONArray("data");
-                    JSONArray profile = data.getJSONObject(0).getJSONArray("profile");
 
-                    //This assumes rows are in order
-                    for (int i=0; i<profile.length(); i++) {
-                        String key = profile.getJSONObject(i).getString("key");
-                        String value = profile.getJSONObject(i).getString("value");
-
-                        addRow(key, value);
-                    }
-
-                    creatingProfile = false;
-                    profileID = data.getJSONObject(0).getString("_id");
-
-                } catch (JSONException e) {
-                    //Means no profile was found
-                    //TODO: add in checking that this is true
-                }
+                parseProfile(response, true);
             }
 
             @Override
@@ -113,6 +167,28 @@ public class Profile extends AppCompatActivity {
                 callback);
     }
 
+    private void deleteFriend(final String friendID) {
+        final VolleyWrapper vw = VolleyWrapper.getInstance(getApplicationContext());
+        VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                Toast.makeText(getApplicationContext(), R.string.view_profile_activity_delete_success,
+                        Toast.LENGTH_SHORT).show();
+                finish();
+            }
+
+            @Override
+            public void onFailure(VolleyError error) {
+                Toast.makeText(getApplicationContext(), Utils.decodeError(error), Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        String url = Utils.friendsURL + "/" + friendID;
+
+        vw.request(getApplication(), url, Utils.viewProfileTAG,
+                Request.Method.DELETE, null, callback);
+    }
+
     private void saveProfile(final View v) {
         final VolleyWrapper vw = VolleyWrapper.getInstance(getApplicationContext());
         VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
@@ -125,6 +201,8 @@ public class Profile extends AppCompatActivity {
 
                     Snackbar.make(v, R.string.my_profile_activity_save_successful,
                             Snackbar.LENGTH_SHORT).setAction("Action", null).show();
+
+                    parseProfile(response, false);
 
                     creatingProfile = false;
                 } catch (JSONException e) {
@@ -152,6 +230,46 @@ public class Profile extends AppCompatActivity {
         showLoading();
         vw.request(getApplication(), url, Utils.saveProfileTAG, method,
                 getProfileJSON(), callback);
+    }
+
+    private void parseProfile(JSONObject response, boolean initialLoad) {
+
+        JSONArray profile;
+        try {
+            profileID = response.getJSONArray("data").getJSONObject(0)
+                    .getString("_id");
+            profile = response.getJSONArray("data").getJSONObject(0)
+                    .getJSONArray("profile");
+        } catch (JSONException e) {
+            try {
+                profileID = response.getString("_id");
+                profile = response.getJSONArray("profile");
+            } catch (JSONException e2) {
+                profileText.setText(R.string.view_profile_activity_load_empty);
+                return;
+            }
+        }
+
+        try {
+            String text = "";
+
+            //This assumes rows are in order
+            for (int i=0; i<profile.length(); i++) {
+                String key = profile.getJSONObject(i).getString("key");
+                String value = profile.getJSONObject(i).getString("value");
+
+                if (initialLoad) {
+                    addRow(key, value);
+                }
+                text = text + key + ": " + value + "\n";
+            }
+
+            creatingProfile = false;
+            profileText.setText(text);
+
+        } catch (JSONException e) {
+            profileText.setText(R.string.view_profile_activity_load_empty);
+        }
     }
 
     private void addRow(String key, String value) {
