@@ -10,8 +10,8 @@
     <string name="login_activity_welcome">Welcome to Friend Request</string>
     <string name="login_activity_login">Login</string>
     <string name="login_activity_signup">Sign Up</string>
-    <string name="login_activity_confirm">Confirm</string>
-    <string name="login_activity_back_to_login">Back to Login</string>
+    <string name="login_activity_have_an_account">I already have an account</string>
+    <string name="login_activity_dont_have_an_account">I don\'t have an account</string>
     <string name="login_activity_full_name">Full Name</string>
     <string name="login_activity_username">Username</string>
     <string name="login_activity_password">Password</string>

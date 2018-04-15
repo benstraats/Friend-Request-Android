@@ -17,8 +17,8 @@ import org.json.JSONObject;
 
 public class Login extends AppCompatActivity {
 
-    private Button signUpButton;
-    private Button loginButton;
+    private Button confirmButton;
+    private Button swapButton;
     private EditText nameTextBox;
     private EditText usernameTextBox;
     private EditText passwordTextBox;
@@ -32,20 +32,20 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        isSignUp = false;
+        isSignUp = true;
 
-        signUpButton = findViewById(R.id.SignUpButton);
-        loginButton = findViewById(R.id.LoginButton);
+        confirmButton = findViewById(R.id.confirmButton);
+        swapButton = findViewById(R.id.swapButton);
         nameTextBox = findViewById(R.id.NameTextBox);
         usernameTextBox = findViewById(R.id.UsernameTextBox);
         passwordTextBox = findViewById(R.id.PasswordTextBox);
         confirmPasswordTextBox = findViewById(R.id.ConfirmPasswordTextBox);
         loginLoading = findViewById(R.id.loginLoading);
 
-        confirmPasswordTextBox.setVisibility(View.INVISIBLE);
-        nameTextBox.setVisibility(View.INVISIBLE);
+        //confirmPasswordTextBox.setVisibility(View.INVISIBLE);
+        //nameTextBox.setVisibility(View.INVISIBLE);
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
+        confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (isSignUp) {
@@ -59,20 +59,20 @@ public class Login extends AppCompatActivity {
             }
         });
 
-        signUpButton.setOnClickListener(new View.OnClickListener() {
+        swapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (isSignUp) {
                     nameTextBox.setVisibility(View.INVISIBLE);
                     confirmPasswordTextBox.setVisibility(View.INVISIBLE);
-                    loginButton.setText(R.string.login_activity_login);
-                    signUpButton.setText(R.string.login_activity_signup);
+                    confirmButton.setText(R.string.login_activity_login);
+                    swapButton.setText(R.string.login_activity_dont_have_an_account);
                     isSignUp = false;
                 } else {
                     nameTextBox.setVisibility(View.VISIBLE);
                     confirmPasswordTextBox.setVisibility(View.VISIBLE);
-                    loginButton.setText(R.string.login_activity_confirm);
-                    signUpButton.setText(R.string.login_activity_back_to_login);
+                    confirmButton.setText(R.string.login_activity_signup);
+                    swapButton.setText(R.string.login_activity_have_an_account);
                     isSignUp = true;
                 }
             }
@@ -245,13 +245,13 @@ public class Login extends AppCompatActivity {
 
     private void showLoading() {
         loginLoading.setVisibility(View.VISIBLE);
-        loginButton.setVisibility(View.INVISIBLE);
-        signUpButton.setVisibility(View.INVISIBLE);
+        confirmButton.setVisibility(View.INVISIBLE);
+        swapButton.setVisibility(View.INVISIBLE);
     }
 
     private void hideLoading() {
         loginLoading.setVisibility(View.INVISIBLE);
-        loginButton.setVisibility(View.VISIBLE);
-        signUpButton.setVisibility(View.VISIBLE);
+        confirmButton.setVisibility(View.VISIBLE);
+        swapButton.setVisibility(View.VISIBLE);
     }
 }
