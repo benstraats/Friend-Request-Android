@@ -27,6 +27,8 @@
     <string name="login_activity_failed_to_signup">Failed to Sign Up</string>
 
     <string name="landing_activity_my_profile">My Profile</string>
+    <string name="landing_activity_pending_friends">Pending Friends (x)</string>
+    <string name="landing_activity_click_to_expand">Tap to expand</string>
 
     <string name="find_friends_activity_search">Search</string>
     <string name="find_friends_activity_add_user_message">Are you sure you want to add this user?</string>
