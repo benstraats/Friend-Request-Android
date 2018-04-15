@@ -20,7 +20,6 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_weight="1"
-            android:text="@string/landing_activity_pending_friends"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -32,7 +31,6 @@
             android:layout_marginBottom="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="@string/landing_activity_click_to_expand"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
