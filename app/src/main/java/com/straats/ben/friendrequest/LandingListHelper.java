@@ -1,12 +1,11 @@
 package com.straats.ben.friendrequest;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.constraint.ConstraintLayout;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -97,18 +96,24 @@ public class LandingListHelper {
                     JSONObject userInfo = response.getJSONObject("userInfo");
 
                     for (int i=skip; i<(skip+numUsers); i++) {
-                        //users.add(Utils.getUserInfo(requestedUsers.getJSONObject(i).getString("requester"), userInfo));
                         String id = requestedUsers.getJSONObject(i).getString("_id");
                         String requester = requestedUsers.getJSONObject(i).getString("requester");
 
                         numRequests++;
                         int index = numRequests;
 
-                        new PendingFriendRow(index, id, requester, "Request", requester);
+                        rowList.add(index, new PendingFriendRow(index, id, requester,
+                                getUserName(userInfo, requester),
+                                getUserUsername(userInfo, requester)));
                     }
 
                     if (numUsers < limit || (skip + numUsers) == total) {
                         fullyDoneLoadingPending = true;
+                    }
+
+                    //Initial load
+                    if (skip == 0) {
+                        rowList.get(0).onRowClick(null);
                     }
 
                 } catch (JSONException e) {
@@ -151,13 +156,12 @@ public class LandingListHelper {
                     int numUsers = Math.min((total-skip), limit);
 
                     JSONArray friendUsers = response.getJSONArray("data");
+                    JSONObject userInfo = response.getJSONObject("userInfo");
 
                     for (int i=skip; i<(skip+numUsers); i++) {
                         String id = friendUsers.getJSONObject(i).getString("_id");
                         String user1 = friendUsers.getJSONObject(i).getString("user1");
                         String user2 = friendUsers.getJSONObject(i).getString("user2");
-
-                        JSONObject userInfo = response.getJSONObject("userInfo");
 
                         String otherUserID = user1;
 
@@ -167,7 +171,9 @@ public class LandingListHelper {
 
                         int index = rowList.size();
 
-                        new AddedFriendRow(index, id, otherUserID, "Friend", otherUserID);
+                        rowList.add(index, new AddedFriendRow(index, id, otherUserID,
+                                getUserName(userInfo, otherUserID),
+                                getUserUsername(userInfo, otherUserID)));
                     }
 
                     if (numUsers < limit || (skip + numUsers) == total) {
@@ -202,6 +208,51 @@ public class LandingListHelper {
         progressBar.setVisibility(View.INVISIBLE);
     }
 
+    private String getUserUsername(JSONObject userInfo, String userID) {
+
+        try {
+            JSONObject data = userInfo.getJSONObject("data");
+            int total = data.getInt("total");
+            int limit = data.getInt("limit");
+
+            JSONArray userData = data.getJSONArray("data");
+
+            int num = Math.min(total, limit);
+
+            for (int i=0; i<num; i++) {
+                if (userData.getJSONObject(i).getString("_id").equals(userID)) {
+                    JSONObject correctUser = userData.getJSONObject(i);
+                    return correctUser.getString("email");
+                }
+            }
+        } catch (JSONException e) {
+            return "Bad Response";
+        }
+        return "Bad Response";
+    }
+
+    private String getUserName(JSONObject userInfo, String userID) {
+        try {
+            JSONObject data = userInfo.getJSONObject("data");
+            int total = data.getInt("total");
+            int limit = data.getInt("limit");
+
+            JSONArray userData = data.getJSONArray("data");
+
+            int num = Math.min(total, limit);
+
+            for (int i=0; i<num; i++) {
+                if (userData.getJSONObject(i).getString("_id").equals(userID)) {
+                    JSONObject correctUser = userData.getJSONObject(i);
+                    return correctUser.getString("name");
+                }
+            }
+        } catch (JSONException e) {
+            return "Bad Response";
+        }
+        return "Bad Response";
+    }
+
     private abstract class CustomRow {
 
         TableRow row;
@@ -215,15 +266,22 @@ public class LandingListHelper {
             row.setVisibility(View.GONE);
         }
 
+        public boolean isVisisble() {
+            return row.getVisibility() == View.VISIBLE;
+        }
+
         public int getIndex() {
             return index;
         }
 
         public void destroy() {
             mainList.removeViewAt(index);
+            //Does this work?
+            rowList.remove(this);
         }
 
         abstract String rowType();
+        abstract void onRowClick(View v);
     }
 
     private class HeadingRow extends CustomRow {
@@ -237,8 +295,12 @@ public class LandingListHelper {
             this.index = index;
 
             row = (TableRow) LayoutInflater.from(c).inflate(R.layout.landing_heading_row, null);
-
-            //TODO: add onclick for the whole row
+            row.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onRowClick(v);
+                }
+            });
 
             ConstraintLayout cl = (ConstraintLayout) row.getChildAt(0);
 
@@ -251,10 +313,17 @@ public class LandingListHelper {
             mainList.addView(row, index);
         }
 
-        private void onClick() {
-            //Going to be hardcoding that this should shrink all pending friend rows
-            //This should be abstracted out later
-
+        public void onRowClick(View v) {
+            //Temp hardcoding of minimizing all pending friend rows
+            for (CustomRow item : rowList) {
+                if (item.rowType().equals("pending")) {
+                    if (item.isVisisble()) {
+                        item.hideRow();
+                    } else {
+                        item.showRow();
+                    }
+                }
+            }
         }
 
         public String rowType() {
@@ -276,9 +345,13 @@ public class LandingListHelper {
             this.requesterUsername = requesterUsername;
             this.index = index;
 
-            row = (TableRow) LayoutInflater.from(c).inflate(R.layout.landing_heading_row, null);
-
-            //TODO: add onclick for the whole row
+            row = (TableRow) LayoutInflater.from(c).inflate(R.layout.landing_pending_friend_row, null);
+            row.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onRowClick(v);
+                }
+            });
 
             ConstraintLayout cl = (ConstraintLayout) row.getChildAt(0);
 
@@ -291,13 +364,29 @@ public class LandingListHelper {
             ImageButton deleteButton = (ImageButton) cl.getChildAt(2);
             ImageButton addButton = (ImageButton) cl.getChildAt(3);
 
-            //TODO: add onclick methods for these two
+            deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(c, "Deleting user", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            addButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(c, "Adding user", Toast.LENGTH_SHORT).show();
+                }
+            });
 
             mainList.addView(row, index);
         }
 
         public String rowType() {
             return "pending";
+        }
+
+        public void onRowClick(View v) {
+            Toast.makeText(c, "You clicked a pending row", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -315,8 +404,13 @@ public class LandingListHelper {
             this.friendUsername = friendUsername;
             this.index = index;
 
-            row = (TableRow) LayoutInflater.from(c).inflate(R.layout.landing_heading_row, null);
-
+            row = (TableRow) LayoutInflater.from(c).inflate(R.layout.landing_friend_row, null);
+            row.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onRowClick(v);
+                }
+            });
             //TODO: add onclick for the whole row
 
             ConstraintLayout cl = (ConstraintLayout) row.getChildAt(0);
@@ -332,6 +426,13 @@ public class LandingListHelper {
 
         public String rowType() {
             return "friend";
+        }
+
+        public void onRowClick(View v) {
+            Intent intent = new Intent(c, Profile.class);
+            intent.putExtra("friendUserID", friendUserID);
+            intent.putExtra("friendID", friendID);
+            c.startActivity(intent);
         }
     }
 }
