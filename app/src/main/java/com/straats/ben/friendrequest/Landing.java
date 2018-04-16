@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TableLayout;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -47,8 +48,6 @@ public class Landing extends AppCompatActivity {
 
         Button myProfileButton = findViewById(R.id.myProfileButton);
 
-        loadingBar = findViewById(R.id.loadingBar);
-
         myProfileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -56,6 +55,11 @@ public class Landing extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        TableLayout mainList = findViewById(R.id.mainTable);
+        ProgressBar loadingBar = findViewById(R.id.loadingBar);
+
+        new LandingListHelper(this, mainList, loadingBar);
     }
 
     @Override
@@ -63,11 +67,4 @@ public class Landing extends AppCompatActivity {
         super.onResume();
     }
 
-    private void showLoading() {
-        loadingBar.setVisibility(View.VISIBLE);
-    }
-
-    private void hideLoading() {
-        loadingBar.setVisibility(View.INVISIBLE);
-    }
 }
