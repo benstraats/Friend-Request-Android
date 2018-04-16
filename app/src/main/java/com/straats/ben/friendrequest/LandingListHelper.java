@@ -11,10 +11,13 @@ import android.widget.ProgressBar;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.VolleyError;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -31,12 +34,13 @@ public class LandingListHelper {
     private int pendingSkip;
     private boolean fullyDoneLoadingPending;
     private boolean currentlyLoadingPending;
-    private ArrayList<CustomRow> pendingFriends;
 
     private int friendSkip;
     private boolean fullyDoneLoadingFriends;
     private boolean currentlyLoadingFriends;
-    private ArrayList<CustomRow> addedFriends;
+
+    private ArrayList<CustomRow> rowList;
+    private int numRequests;
 
     public LandingListHelper(Context c, TableLayout mainList, ProgressBar progressBar) {
         this.c = c;
@@ -44,35 +48,81 @@ public class LandingListHelper {
         this.progressBar = progressBar;
 
         pendingTotal = -1;
-        pendingSkip = 0;
-        fullyDoneLoadingPending = false;
-        currentlyLoadingPending = false;
-        pendingFriends = new ArrayList<>();
-
         friendSkip = 0;
-        fullyDoneLoadingFriends = false;
-        currentlyLoadingFriends = false;
-        addedFriends = new ArrayList<>();
+        numRequests = 0;
+
+        rowList = new ArrayList<>();
+
+        wipeList();
+        initialLoad();
+    }
+
+    public void wipeList() {
+        mainList.removeAllViews();
+        rowList.clear();
+        numRequests = 0;
 
         HeadingRow pendingHeader = new HeadingRow(0,"Pending Friends", "Tap to expand");
-        addedFriends.add(0, pendingHeader);
+        rowList.add(0, pendingHeader);
+    }
+
+    public void initialLoad() {
+        fullyDoneLoadingPending = false;
+        pendingSkip = 0;
+        numRequests = 0;
+        getRequests(pendingSkip, limit);
+
+        fullyDoneLoadingFriends = false;
+        friendSkip = 0;
+        getFriends(friendSkip, limit);
     }
 
     private void getRequests(final int skip, final int limit) {
 
         showLoading();
+        currentlyLoadingPending = true;
+
         final VolleyWrapper vw = VolleyWrapper.getInstance(c);
 
         VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
 
+                try {
+                    int total = Integer.parseInt(response.getString("total"));
+
+                    int numUsers = Math.min((total-skip), limit);
+
+                    JSONArray requestedUsers = response.getJSONArray("data");
+                    JSONObject userInfo = response.getJSONObject("userInfo");
+
+                    for (int i=skip; i<(skip+numUsers); i++) {
+                        //users.add(Utils.getUserInfo(requestedUsers.getJSONObject(i).getString("requester"), userInfo));
+                        String id = requestedUsers.getJSONObject(i).getString("_id");
+                        String requester = requestedUsers.getJSONObject(i).getString("requester");
+
+                        numRequests++;
+                        int index = numRequests;
+
+                        new PendingFriendRow(index, id, requester, "Request", requester);
+                    }
+
+                    if (numUsers < limit || (skip + numUsers) == total) {
+                        fullyDoneLoadingPending = true;
+                    }
+
+                } catch (JSONException e) {
+                    Toast.makeText(c, R.string.bad_response, Toast.LENGTH_SHORT).show();
+                }
+
+                currentlyLoadingPending = false;
                 hideLoading();
             }
 
             @Override
             public void onFailure(VolleyError error) {
-
+                Toast.makeText(c, R.string.failed_server_call, Toast.LENGTH_SHORT).show();
+                currentlyLoadingPending = false;
                 hideLoading();
             }
         };
@@ -86,18 +136,56 @@ public class LandingListHelper {
     private void getFriends(final int skip, final int limit) {
 
         showLoading();
+        currentlyLoadingFriends = true;
+
         final VolleyWrapper vw = VolleyWrapper.getInstance(c);
 
         VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
 
+                try {
+
+                    int total = Integer.parseInt(response.getString("total"));
+
+                    int numUsers = Math.min((total-skip), limit);
+
+                    JSONArray friendUsers = response.getJSONArray("data");
+
+                    for (int i=skip; i<(skip+numUsers); i++) {
+                        String id = friendUsers.getJSONObject(i).getString("_id");
+                        String user1 = friendUsers.getJSONObject(i).getString("user1");
+                        String user2 = friendUsers.getJSONObject(i).getString("user2");
+
+                        JSONObject userInfo = response.getJSONObject("userInfo");
+
+                        String otherUserID = user1;
+
+                        if (user1.equals(Utils.userID)) {
+                            otherUserID = user2;
+                        }
+
+                        int index = rowList.size();
+
+                        new AddedFriendRow(index, id, otherUserID, "Friend", otherUserID);
+                    }
+
+                    if (numUsers < limit || (skip + numUsers) == total) {
+                        fullyDoneLoadingFriends = true;
+                    }
+
+                } catch (JSONException e) {
+                    Toast.makeText(c, R.string.bad_response, Toast.LENGTH_SHORT).show();
+                }
+
+                currentlyLoadingFriends = false;
                 hideLoading();
             }
 
             @Override
             public void onFailure(VolleyError error) {
-
+                Toast.makeText(c, R.string.failed_server_call, Toast.LENGTH_SHORT).show();
+                currentlyLoadingFriends = false;
                 hideLoading();
             }
         };
@@ -161,6 +249,12 @@ public class LandingListHelper {
             subTextView.setText(subText);
 
             mainList.addView(row, index);
+        }
+
+        private void onClick() {
+            //Going to be hardcoding that this should shrink all pending friend rows
+            //This should be abstracted out later
+
         }
 
         public String rowType() {

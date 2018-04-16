@@ -4,6 +4,7 @@
     <string name="title_activity_profile">My Profile</string>
     <string name="title_activity_view_profile">Friends Profile</string>
 
+    <string name="failed_server_call">Failed to get info</string>
     <string name="bad_response">Bad Response</string>
     <string name="parse_failure">Failed to parse data</string>
 

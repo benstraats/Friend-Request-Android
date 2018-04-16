@@ -109,8 +109,6 @@ public class Login extends AppCompatActivity {
                         Utils.accessToken = response.getString("accessToken");
                         Utils.userEmail = username;
                         getCurrentUserInfo(username);
-                        Intent intent = new Intent(getApplicationContext(), Landing.class);
-                        startActivity(intent);
                     } catch (JSONException e) {
                         Toast.makeText(getApplicationContext(), R.string.bad_response,
                                 Toast.LENGTH_SHORT).show();
@@ -223,6 +221,8 @@ public class Login extends AppCompatActivity {
                             .getString("_id");
                     Utils.userName = response.getJSONArray("data").getJSONObject(0)
                             .getString("name");
+                    Intent intent = new Intent(getApplicationContext(), Landing.class);
+                    startActivity(intent);
                 } catch (JSONException e) {
                     Toast.makeText(getApplicationContext(), R.string.bad_response,
                             Toast.LENGTH_SHORT).show();
@@ -239,8 +239,8 @@ public class Login extends AppCompatActivity {
 
         String url = Utils.usersURL + "?email=" + userEmail;
 
-        vw.request(getApplication(), url, Utils.searchUsersTAG,
-                Request.Method.GET, null, callback);
+        vw.request(getApplication(), url, Utils.searchUsersTAG, Request.Method.GET, null,
+                callback);
     }
 
     private void showLoading() {
