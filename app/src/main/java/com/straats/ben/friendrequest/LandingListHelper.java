@@ -5,8 +5,11 @@ import android.content.Intent;
 import android.support.constraint.ConstraintLayout;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.widget.AbsListView;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -24,11 +27,12 @@ import java.util.ArrayList;
 public class LandingListHelper {
 
     private Context c;
-    private TableLayout mainList;
+    private final TableLayout mainList;
     private ProgressBar progressBar;
 
     private int limit = 49;
 
+    private boolean pendingCollapsed = false;
     private int pendingTotal;
     private int pendingSkip;
     private boolean fullyDoneLoadingPending;
@@ -41,12 +45,12 @@ public class LandingListHelper {
     private ArrayList<CustomRow> rowList;
     private int numRequests;
 
-    public LandingListHelper(Context c, TableLayout mainList, ProgressBar progressBar) {
+    public LandingListHelper(Context c, TableLayout list, final ScrollView scrollView, ProgressBar progressBar) {
         this.c = c;
-        this.mainList = mainList;
+        this.mainList = list;
         this.progressBar = progressBar;
 
-        pendingTotal = -1;
+        pendingTotal = 0;
         friendSkip = 0;
         numRequests = 0;
 
@@ -54,6 +58,43 @@ public class LandingListHelper {
 
         wipeList();
         initialLoad();
+
+        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                double currentPosition = 0.0;
+
+                if (!pendingCollapsed && !currentlyLoadingPending && !fullyDoneLoadingPending) {
+                    //check if at last 20 pending friends then load next bunch
+                    currentPosition = getPercentScrolled(scrollView);
+
+                    double pendingPercent = (pendingTotal / ((double) mainList.getChildCount())) * 100;
+                    if (currentPosition >= (pendingPercent-25)) {
+                        pendingSkip += limit;
+                        getRequests(pendingSkip, limit);
+                    }
+                }
+
+                if (!currentlyLoadingFriends && !fullyDoneLoadingFriends) {
+                    //Dont want to calc again if we dont have to
+                    if (currentPosition == 0.0) {
+                        currentPosition = getPercentScrolled(scrollView);
+                    }
+
+                    if (currentPosition >= 30) {
+                        friendSkip += limit;
+                        getFriends(friendSkip, limit);
+                    }
+                }
+            }
+        });
+    }
+
+    private double getPercentScrolled(ScrollView sv) {
+        //This eqn is fucked
+        float scrollY = sv.getScrollY();
+        int totalHeight = sv.getChildAt(0).getHeight();
+        return (scrollY/totalHeight) * 100;
     }
 
     public void wipeList() {
@@ -95,7 +136,7 @@ public class LandingListHelper {
                     JSONArray requestedUsers = response.getJSONArray("data");
                     JSONObject userInfo = response.getJSONObject("userInfo");
 
-                    for (int i=skip; i<(skip+numUsers); i++) {
+                    for (int i=0; i<numUsers; i++) {
                         String id = requestedUsers.getJSONObject(i).getString("_id");
                         String requester = requestedUsers.getJSONObject(i).getString("requester");
 
@@ -158,7 +199,7 @@ public class LandingListHelper {
                     JSONArray friendUsers = response.getJSONArray("data");
                     JSONObject userInfo = response.getJSONObject("userInfo");
 
-                    for (int i=skip; i<(skip+numUsers); i++) {
+                    for (int i=0; i<numUsers; i++) {
                         String id = friendUsers.getJSONObject(i).getString("_id");
                         String user1 = friendUsers.getJSONObject(i).getString("user1");
                         String user2 = friendUsers.getJSONObject(i).getString("user2");
@@ -314,10 +355,17 @@ public class LandingListHelper {
         }
 
         public void onRowClick(View v) {
-            //Temp hardcoding of minimizing all pending friend rows
+            //TODO: refactor into passed in arg
+
+            if (pendingCollapsed) {
+                pendingCollapsed = false;
+            } else {
+                pendingCollapsed = true;
+            }
+
             for (CustomRow item : rowList) {
                 if (item.rowType().equals("pending")) {
-                    if (item.isVisisble()) {
+                    if (pendingCollapsed) {
                         item.hideRow();
                     } else {
                         item.showRow();
@@ -344,6 +392,8 @@ public class LandingListHelper {
             this.requesterName = requesterName;
             this.requesterUsername = requesterUsername;
             this.index = index;
+
+            pendingTotal += 1;
 
             row = (TableRow) LayoutInflater.from(c).inflate(R.layout.landing_pending_friend_row, null);
             row.setOnClickListener(new View.OnClickListener() {
@@ -411,7 +461,6 @@ public class LandingListHelper {
                     onRowClick(v);
                 }
             });
-            //TODO: add onclick for the whole row
 
             ConstraintLayout cl = (ConstraintLayout) row.getChildAt(0);
 

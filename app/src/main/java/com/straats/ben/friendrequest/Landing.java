@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.Toast;
 
@@ -57,9 +58,10 @@ public class Landing extends AppCompatActivity {
         });
 
         TableLayout mainList = findViewById(R.id.mainTable);
+        ScrollView listScroll = findViewById(R.id.listScroll);
         ProgressBar loadingBar = findViewById(R.id.loadingBar);
 
-        new LandingListHelper(this, mainList, loadingBar);
+        new LandingListHelper(this, mainList, listScroll, loadingBar);
     }
 
     @Override
