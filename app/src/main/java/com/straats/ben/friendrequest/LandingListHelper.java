@@ -241,6 +241,30 @@ public class LandingListHelper {
         vw.request(c, url, Utils.getFriendsTAG, Request.Method.GET, null, callback);
     }
 
+    private void acceptRequest(final String requestID, VolleyWrapper.VolleyCallback callback) {
+
+        final VolleyWrapper vw = VolleyWrapper.getInstance(c);
+
+        String url = Utils.friendsURL;
+        JSONObject body = new JSONObject();
+        try {
+            body.put("requestID", requestID);
+        } catch (JSONException e) {
+            Toast.makeText(c, R.string.parse_failure, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        vw.request(c, url, Utils.acceptRequestTAG, Request.Method.POST, body, callback);
+    }
+
+    private void rejectRequest(final String requestID, VolleyWrapper.VolleyCallback callback) {
+        final VolleyWrapper vw = VolleyWrapper.getInstance(c);
+
+        String url = Utils.requestsURL + "/" + requestID;
+
+        vw.request(c, url, Utils.rejectRequestTAG, Request.Method.DELETE, null, callback);
+    }
+
     private void showLoading() {
         progressBar.setVisibility(View.VISIBLE);
     }
@@ -297,7 +321,6 @@ public class LandingListHelper {
     private abstract class CustomRow {
 
         TableRow row;
-        int index;
 
         public void showRow() {
             row.setVisibility(View.VISIBLE);
@@ -311,13 +334,8 @@ public class LandingListHelper {
             return row.getVisibility() == View.VISIBLE;
         }
 
-        public int getIndex() {
-            return index;
-        }
-
         public void destroy() {
-            mainList.removeViewAt(index);
-            //Does this work?
+            mainList.removeViewAt(rowList.indexOf(this));
             rowList.remove(this);
         }
 
@@ -333,7 +351,6 @@ public class LandingListHelper {
         public HeadingRow(int index, String headingText, String subText) {
             this.headingText = headingText;
             this.subText = subText;
-            this.index = index;
 
             row = (TableRow) LayoutInflater.from(c).inflate(R.layout.landing_heading_row, null);
             row.setOnClickListener(new View.OnClickListener() {
@@ -381,17 +398,16 @@ public class LandingListHelper {
 
     private class PendingFriendRow extends CustomRow {
 
-        private String requestID;
+        private final String requestID;
         private String requesterID;
-        private String requesterName;
-        private String requesterUsername;
+        private final String requesterName;
+        private final String requesterUsername;
 
-        public PendingFriendRow(int index, String requestID, String requesterID, String requesterName, String requesterUsername) {
-            this.requestID = requestID;
+        public PendingFriendRow(int index, String requestRESTID, String requesterID, String requesterNameHold, String requesterUsernameHold) {
+            this.requestID = requestRESTID;
             this.requesterID = requesterID;
-            this.requesterName = requesterName;
-            this.requesterUsername = requesterUsername;
-            this.index = index;
+            this.requesterName = requesterNameHold;
+            this.requesterUsername = requesterUsernameHold;
 
             pendingTotal += 1;
 
@@ -417,14 +433,58 @@ public class LandingListHelper {
             deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(c, "Deleting user", Toast.LENGTH_SHORT).show();
+
+                    VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
+                        @Override
+                        public void onSuccess(JSONObject response) {
+                            destroy();
+                        }
+
+                        @Override
+                        public void onFailure(VolleyError error) {
+                            Toast.makeText(c, Utils.decodeError(error), Toast.LENGTH_SHORT).show();
+                        }
+                    };
+
+                    rejectRequest(requestID, callback);
                 }
             });
 
             addButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(c, "Adding user", Toast.LENGTH_SHORT).show();
+                    VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
+                        @Override
+                        public void onSuccess(JSONObject response) {
+                            if (fullyDoneLoadingFriends) {
+                                try {
+                                    String id = response.getString("_id");
+                                    String user1 = response.getString("user1");
+                                    String user2 = response.getString("user2");
+
+                                    String otherUserID = user1;
+
+                                    if (user1.equals(Utils.userID)) {
+                                        otherUserID = user2;
+                                    }
+
+                                    int size = rowList.size();
+                                    rowList.add(size, new AddedFriendRow(size, id, otherUserID, requesterName, requesterUsername));
+                                } catch (JSONException e) {
+                                    Toast.makeText(c, R.string.bad_response, Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            destroy();
+                        }
+
+                        @Override
+                        public void onFailure(VolleyError error) {
+                            Toast.makeText(c, Utils.decodeError(error), Toast.LENGTH_SHORT).show();
+                        }
+                    };
+
+                    acceptRequest(requestID, callback);
                 }
             });
 
@@ -452,7 +512,6 @@ public class LandingListHelper {
             this.friendUserID = friendUserID;
             this.friendName = friendName;
             this.friendUsername = friendUsername;
-            this.index = index;
 
             row = (TableRow) LayoutInflater.from(c).inflate(R.layout.landing_friend_row, null);
             row.setOnClickListener(new View.OnClickListener() {
