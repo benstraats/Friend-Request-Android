@@ -6,7 +6,6 @@ import android.support.constraint.ConstraintLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.widget.AbsListView;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -403,6 +402,10 @@ public class LandingListHelper {
         private final String requesterName;
         private final String requesterUsername;
 
+        private final ImageButton deleteButton;
+        private final ImageButton addButton;
+        private final ProgressBar progressBar;
+
         public PendingFriendRow(int index, String requestRESTID, String requesterID, String requesterNameHold, String requesterUsernameHold) {
             this.requestID = requestRESTID;
             this.requesterID = requesterID;
@@ -427,8 +430,10 @@ public class LandingListHelper {
             mainTextView.setText(requesterName);
             subTextView.setText(requesterUsername);
 
-            ImageButton deleteButton = (ImageButton) cl.getChildAt(2);
-            ImageButton addButton = (ImageButton) cl.getChildAt(3);
+            deleteButton = (ImageButton) cl.getChildAt(2);
+            addButton = (ImageButton) cl.getChildAt(3);
+
+            progressBar = (ProgressBar) cl.getChildAt(4);
 
             deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -437,15 +442,18 @@ public class LandingListHelper {
                     VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
                         @Override
                         public void onSuccess(JSONObject response) {
+                            hideLoading();
                             destroy();
                         }
 
                         @Override
                         public void onFailure(VolleyError error) {
                             Toast.makeText(c, Utils.decodeError(error), Toast.LENGTH_SHORT).show();
+                            hideLoading();
                         }
                     };
 
+                    showLoading();
                     rejectRequest(requestID, callback);
                 }
             });
@@ -456,6 +464,7 @@ public class LandingListHelper {
                     VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
                         @Override
                         public void onSuccess(JSONObject response) {
+                            hideLoading();
                             if (fullyDoneLoadingFriends) {
                                 try {
                                     String id = response.getString("_id");
@@ -480,15 +489,29 @@ public class LandingListHelper {
 
                         @Override
                         public void onFailure(VolleyError error) {
+                            hideLoading();
                             Toast.makeText(c, Utils.decodeError(error), Toast.LENGTH_SHORT).show();
                         }
                     };
 
+                    showLoading();
                     acceptRequest(requestID, callback);
                 }
             });
 
             mainList.addView(row, index);
+        }
+
+        private void hideLoading() {
+            progressBar.setVisibility(View.INVISIBLE);
+            deleteButton.setVisibility(View.VISIBLE);
+            addButton.setVisibility(View.VISIBLE);
+        }
+
+        private void showLoading() {
+            progressBar.setVisibility(View.VISIBLE);
+            deleteButton.setVisibility(View.INVISIBLE);
+            addButton.setVisibility(View.INVISIBLE);
         }
 
         public String rowType() {
