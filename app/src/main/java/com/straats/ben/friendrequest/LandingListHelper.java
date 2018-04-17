@@ -33,6 +33,7 @@ public class LandingListHelper {
 
     private boolean pendingCollapsed = false;
     private int pendingTotal;
+    private int absoluteTotal;
     private int pendingSkip;
     private boolean fullyDoneLoadingPending;
     private boolean currentlyLoadingPending;
@@ -50,6 +51,7 @@ public class LandingListHelper {
         this.progressBar = progressBar;
 
         pendingTotal = 0;
+        absoluteTotal = 0;
         friendSkip = 0;
         numRequests = 0;
 
@@ -102,6 +104,7 @@ public class LandingListHelper {
         numRequests = 0;
 
         HeadingRow pendingHeader = new HeadingRow(0,"Pending Friends", "Tap to expand");
+        pendingHeader.hideRow();
         rowList.add(0, pendingHeader);
     }
 
@@ -129,6 +132,15 @@ public class LandingListHelper {
 
                 try {
                     int total = Integer.parseInt(response.getString("total"));
+
+                    absoluteTotal = total;
+                    ((HeadingRow) rowList.get(0)).setHeadingText("Pending Friends (" + total + ")");
+
+                    if (total == 0) {
+                        rowList.get(0).hideRow();
+                    } else {
+                        rowList.get(0).showRow();
+                    }
 
                     int numUsers = Math.min((total-skip), limit);
 
@@ -347,6 +359,9 @@ public class LandingListHelper {
         private String headingText;
         private String subText;
 
+        TextView mainTextView;
+        TextView subTextView;
+
         public HeadingRow(int index, String headingText, String subText) {
             this.headingText = headingText;
             this.subText = subText;
@@ -361,8 +376,8 @@ public class LandingListHelper {
 
             ConstraintLayout cl = (ConstraintLayout) row.getChildAt(0);
 
-            TextView mainTextView = (TextView) cl.getChildAt(0);
-            TextView subTextView = (TextView) cl.getChildAt(1);
+            mainTextView = (TextView) cl.getChildAt(0);
+            subTextView = (TextView) cl.getChildAt(1);
 
             mainTextView.setText(headingText);
             subTextView.setText(subText);
@@ -375,8 +390,11 @@ public class LandingListHelper {
 
             if (pendingCollapsed) {
                 pendingCollapsed = false;
+                setSubText("Tap to collapse");
+
             } else {
                 pendingCollapsed = true;
+                setSubText("Tap to expand");
             }
 
             for (CustomRow item : rowList) {
@@ -392,6 +410,16 @@ public class LandingListHelper {
 
         public String rowType() {
             return "heading";
+        }
+
+        public void setHeadingText(String headingText) {
+            this.headingText = headingText;
+            mainTextView.setText(headingText);
+        }
+
+        public void setSubText(String subText) {
+            this.subText = subText;
+            subTextView.setText(subText);
         }
     }
 
@@ -444,6 +472,11 @@ public class LandingListHelper {
                         public void onSuccess(JSONObject response) {
                             hideLoading();
                             destroy();
+                            if (rowList.get(1).rowType().equals("friend")) {
+                                rowList.get(0).hideRow();
+                            }
+                            absoluteTotal--;
+                            ((HeadingRow) rowList.get(0)).setHeadingText("Pending Friends (" + absoluteTotal + ")");
                         }
 
                         @Override
@@ -484,7 +517,12 @@ public class LandingListHelper {
                                 }
                             }
 
+                            absoluteTotal--;
+                            ((HeadingRow) rowList.get(0)).setHeadingText("Pending Friends (" + absoluteTotal + ")");
                             destroy();
+                            if (rowList.get(1).rowType().equals("friend")) {
+                                rowList.get(0).hideRow();
+                            }
                         }
 
                         @Override
