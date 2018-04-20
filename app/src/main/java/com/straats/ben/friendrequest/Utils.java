@@ -32,6 +32,9 @@ public class Utils {
     protected final static String friendsURL = baseURL + "friends";
     protected final static String requestsURL = baseURL + "requests";
     protected final static String profileURL = baseURL + "profile";
+    protected final static String searchURL = baseURL + "search";
+    protected final static String myFriendsURL = baseURL + "myfriends";
+    protected final static String myRequestsURL = baseURL + "myrequests";
 
     //TAGs section
     protected final static String signUpTAG = "Sign Up";

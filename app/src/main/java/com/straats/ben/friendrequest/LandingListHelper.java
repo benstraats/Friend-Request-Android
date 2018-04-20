@@ -30,7 +30,7 @@ public class LandingListHelper {
     private final TableLayout mainList;
     private ProgressBar progressBar;
 
-    private int limit = 49;
+    private int limit = 50;
 
     private boolean pendingCollapsed = false;
     private int pendingTotal;
@@ -132,8 +132,10 @@ public class LandingListHelper {
             public void onSuccess(JSONObject response) {
 
                 try {
-                    int total = Integer.parseInt(response.getString("total"));
+                    JSONObject requestSection = response.getJSONObject("requests");
+                    JSONObject userSection = response.getJSONObject("users");
 
+                    int total = Integer.parseInt(requestSection.getString("total"));
                     absoluteTotal = total;
                     ((PendingFriendHeaderRow) rowList.get(0)).setHeadingText("Pending Friends (" + total + ")");
 
@@ -145,8 +147,7 @@ public class LandingListHelper {
 
                     int numUsers = Math.min((total-skip), limit);
 
-                    JSONArray requestedUsers = response.getJSONArray("data");
-                    JSONObject userInfo = response.getJSONObject("userInfo");
+                    JSONArray requestedUsers = requestSection.getJSONArray("data");
 
                     for (int i=0; i<numUsers; i++) {
                         String id = requestedUsers.getJSONObject(i).getString("_id");
@@ -156,8 +157,8 @@ public class LandingListHelper {
                         int index = numRequests;
 
                         rowList.add(index, new PendingFriendRow(index, id, requester,
-                                getUserName(userInfo, requester),
-                                getUserUsername(userInfo, requester)));
+                                getUserName(userSection, requester),
+                                getUserUsername(userSection, requester)));
                     }
 
                     if (numUsers < limit || (skip + numUsers) == total) {
@@ -185,9 +186,7 @@ public class LandingListHelper {
             }
         };
 
-        String url = Utils.requestsURL + "?requestee=" + Utils.userID + "&$limit=" + limit +
-                "&$skip=" + skip;
-
+        String url = Utils.myRequestsURL + "?$limit=" + limit + "&$skip=" + skip;
         vw.request(c, url, Utils.getRequestsTAG, Request.Method.GET, null, callback);
     }
 
@@ -204,12 +203,14 @@ public class LandingListHelper {
 
                 try {
 
-                    int total = Integer.parseInt(response.getString("total"));
+                    JSONObject friendSection = response.getJSONObject("friends");
+                    JSONObject userSection = response.getJSONObject("users");
+
+                    JSONArray friendUsers = friendSection.getJSONArray("data");
+
+                    int total = Integer.parseInt(friendSection.getString("total"));
 
                     int numUsers = Math.min((total-skip), limit);
-
-                    JSONArray friendUsers = response.getJSONArray("data");
-                    JSONObject userInfo = response.getJSONObject("userInfo");
 
                     for (int i=0; i<numUsers; i++) {
                         String id = friendUsers.getJSONObject(i).getString("_id");
@@ -225,8 +226,8 @@ public class LandingListHelper {
                         int index = rowList.size();
 
                         rowList.add(index, new AddedFriendRow(index, id, otherUserID,
-                                getUserName(userInfo, otherUserID),
-                                getUserUsername(userInfo, otherUserID)));
+                                getUserName(userSection, otherUserID),
+                                getUserUsername(userSection, otherUserID)));
                     }
 
                     if (numUsers < limit || (skip + numUsers) == total) {
@@ -249,7 +250,7 @@ public class LandingListHelper {
             }
         };
 
-        String url = Utils.friendsURL + "?$limit=" + limit + "&$skip=" + skip;
+        String url = Utils.myFriendsURL + "?$limit=" + limit + "&$skip=" + skip;
         vw.request(c, url, Utils.getFriendsTAG, Request.Method.GET, null, callback);
     }
 
@@ -288,11 +289,10 @@ public class LandingListHelper {
     private String getUserUsername(JSONObject userInfo, String userID) {
 
         try {
-            JSONObject data = userInfo.getJSONObject("data");
-            int total = data.getInt("total");
-            int limit = data.getInt("limit");
+            int total = userInfo.getInt("total");
+            int limit = userInfo.getInt("limit");
 
-            JSONArray userData = data.getJSONArray("data");
+            JSONArray userData = userInfo.getJSONArray("data");
 
             int num = Math.min(total, limit);
 
@@ -310,11 +310,10 @@ public class LandingListHelper {
 
     private String getUserName(JSONObject userInfo, String userID) {
         try {
-            JSONObject data = userInfo.getJSONObject("data");
-            int total = data.getInt("total");
-            int limit = data.getInt("limit");
+            int total = userInfo.getInt("total");
+            int limit = userInfo.getInt("limit");
 
-            JSONArray userData = data.getJSONArray("data");
+            JSONArray userData = userInfo.getJSONArray("data");
 
             int num = Math.min(total, limit);
 
