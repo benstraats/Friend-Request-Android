@@ -59,25 +59,25 @@
         app:layout_constraintTop_toBottomOf="@+id/PasswordTextBox" />
 
     <Button
-        android:id="@+id/LoginButton"
+        android:id="@+id/confirmButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="32dp"
-        android:layout_marginStart="24dp"
-        android:text="@string/login_activity_login"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/SignUpButton"
-        app:layout_constraintTop_toTopOf="@+id/SignUpButton" />
+        android:layout_marginTop="16dp"
+        android:text="@string/login_activity_signup"
+        app:layout_constraintEnd_toEndOf="@+id/ConfirmPasswordTextBox"
+        app:layout_constraintTop_toBottomOf="@+id/ConfirmPasswordTextBox" />
 
     <Button
-        android:id="@+id/SignUpButton"
+        android:id="@+id/swapButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:layout_marginStart="32dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="24dp"
-        android:text="@string/login_activity_signup"
-        app:layout_constraintEnd_toStartOf="@+id/LoginButton"
+        android:text="@string/login_activity_have_an_account"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ConfirmPasswordTextBox" />
 
@@ -100,9 +100,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/LoginButton"
-        app:layout_constraintEnd_toEndOf="@+id/LoginButton"
-        app:layout_constraintStart_toStartOf="@+id/LoginButton"
-        app:layout_constraintTop_toTopOf="@+id/LoginButton" />
+        app:layout_constraintBottom_toBottomOf="@+id/confirmButton"
+        app:layout_constraintEnd_toEndOf="@+id/confirmButton"
+        app:layout_constraintStart_toStartOf="@+id/confirmButton"
+        app:layout_constraintTop_toTopOf="@+id/confirmButton" />
 
 </android.support.constraint.ConstraintLayout>

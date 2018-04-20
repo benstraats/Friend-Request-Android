@@ -173,11 +173,11 @@ public class FindFriends extends AppCompatActivity {
             }
         };
 
-        String url = vw.usersURL + "?$search=" + search + "&$limit=" + searchLimit + "&$skip=" +
+        String url = Utils.usersURL + "?$search=" + search + "&$limit=" + searchLimit + "&$skip=" +
                 searchSkip;
 
         showSearchLoading();
-        vw.request(getApplication(), url, vw.searchUsersTAG, Request.Method.GET, null,
+        vw.request(getApplication(), url, Utils.searchUsersTAG, Request.Method.GET, null,
                 callback);
     }
 
@@ -200,7 +200,7 @@ public class FindFriends extends AppCompatActivity {
             }
         };
 
-        String url = vw.requestsURL;
+        String url = Utils.requestsURL;
 
         JSONObject body = new JSONObject();
         try {
@@ -211,7 +211,7 @@ public class FindFriends extends AppCompatActivity {
             return;
         }
 
-        vw.request(getApplication(), url, vw.requestUserTAG, Request.Method.POST, body, callback);
+        vw.request(getApplication(), url, Utils.requestUserTAG, Request.Method.POST, body, callback);
     }
 
     private void showSearchLoading() {

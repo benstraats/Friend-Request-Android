@@ -17,8 +17,8 @@ import org.json.JSONObject;
 
 public class Login extends AppCompatActivity {
 
-    private Button signUpButton;
-    private Button loginButton;
+    private Button confirmButton;
+    private Button swapButton;
     private EditText nameTextBox;
     private EditText usernameTextBox;
     private EditText passwordTextBox;
@@ -32,20 +32,20 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        isSignUp = false;
+        isSignUp = true;
 
-        signUpButton = findViewById(R.id.SignUpButton);
-        loginButton = findViewById(R.id.LoginButton);
+        confirmButton = findViewById(R.id.confirmButton);
+        swapButton = findViewById(R.id.swapButton);
         nameTextBox = findViewById(R.id.NameTextBox);
         usernameTextBox = findViewById(R.id.UsernameTextBox);
         passwordTextBox = findViewById(R.id.PasswordTextBox);
         confirmPasswordTextBox = findViewById(R.id.ConfirmPasswordTextBox);
         loginLoading = findViewById(R.id.loginLoading);
 
-        confirmPasswordTextBox.setVisibility(View.INVISIBLE);
-        nameTextBox.setVisibility(View.INVISIBLE);
+        //confirmPasswordTextBox.setVisibility(View.INVISIBLE);
+        //nameTextBox.setVisibility(View.INVISIBLE);
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
+        confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (isSignUp) {
@@ -59,20 +59,20 @@ public class Login extends AppCompatActivity {
             }
         });
 
-        signUpButton.setOnClickListener(new View.OnClickListener() {
+        swapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (isSignUp) {
                     nameTextBox.setVisibility(View.INVISIBLE);
                     confirmPasswordTextBox.setVisibility(View.INVISIBLE);
-                    loginButton.setText(R.string.login_activity_login);
-                    signUpButton.setText(R.string.login_activity_signup);
+                    confirmButton.setText(R.string.login_activity_login);
+                    swapButton.setText(R.string.login_activity_dont_have_an_account);
                     isSignUp = false;
                 } else {
                     nameTextBox.setVisibility(View.VISIBLE);
                     confirmPasswordTextBox.setVisibility(View.VISIBLE);
-                    loginButton.setText(R.string.login_activity_confirm);
-                    signUpButton.setText(R.string.login_activity_back_to_login);
+                    confirmButton.setText(R.string.login_activity_signup);
+                    swapButton.setText(R.string.login_activity_have_an_account);
                     isSignUp = true;
                 }
             }
@@ -109,8 +109,6 @@ public class Login extends AppCompatActivity {
                         Utils.accessToken = response.getString("accessToken");
                         Utils.userEmail = username;
                         getCurrentUserInfo(username);
-                        Intent intent = new Intent(getApplicationContext(), Landing.class);
-                        startActivity(intent);
                     } catch (JSONException e) {
                         Toast.makeText(getApplicationContext(), R.string.bad_response,
                                 Toast.LENGTH_SHORT).show();
@@ -138,7 +136,7 @@ public class Login extends AppCompatActivity {
             }
 
             showLoading();
-            vw.request(getApplication(), vw.authenticationURL, vw.loginTAG,
+            vw.request(getApplication(), Utils.authenticationURL, Utils.loginTAG,
                     Request.Method.POST, body, callback);
         }
     }
@@ -205,7 +203,7 @@ public class Login extends AppCompatActivity {
             };
 
             showLoading();
-            vw.request(getApplication(), vw.usersURL, vw.signUpTAG,
+            vw.request(getApplication(), Utils.usersURL, Utils.signUpTAG,
                     Request.Method.POST, body, callback);
 
         }
@@ -223,6 +221,8 @@ public class Login extends AppCompatActivity {
                             .getString("_id");
                     Utils.userName = response.getJSONArray("data").getJSONObject(0)
                             .getString("name");
+                    Intent intent = new Intent(getApplicationContext(), Landing.class);
+                    startActivity(intent);
                 } catch (JSONException e) {
                     Toast.makeText(getApplicationContext(), R.string.bad_response,
                             Toast.LENGTH_SHORT).show();
@@ -237,21 +237,21 @@ public class Login extends AppCompatActivity {
             }
         };
 
-        String url = vw.usersURL + "?email=" + userEmail;
+        String url = Utils.usersURL + "?email=" + userEmail;
 
-        vw.request(getApplication(), url, vw.searchUsersTAG,
-                Request.Method.GET, null, callback);
+        vw.request(getApplication(), url, Utils.searchUsersTAG, Request.Method.GET, null,
+                callback);
     }
 
     private void showLoading() {
         loginLoading.setVisibility(View.VISIBLE);
-        loginButton.setVisibility(View.INVISIBLE);
-        signUpButton.setVisibility(View.INVISIBLE);
+        confirmButton.setVisibility(View.INVISIBLE);
+        swapButton.setVisibility(View.INVISIBLE);
     }
 
     private void hideLoading() {
         loginLoading.setVisibility(View.INVISIBLE);
-        loginButton.setVisibility(View.VISIBLE);
-        signUpButton.setVisibility(View.VISIBLE);
+        confirmButton.setVisibility(View.VISIBLE);
+        swapButton.setVisibility(View.VISIBLE);
     }
 }

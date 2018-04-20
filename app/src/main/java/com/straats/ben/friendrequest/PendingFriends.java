@@ -137,11 +137,11 @@ public class PendingFriends extends AppCompatActivity {
             }
         };
 
-        String url = vw.requestsURL + "?requestee=" + Utils.userID + "&$limit=" + limit + "&$skip="
+        String url = Utils.requestsURL + "?requestee=" + Utils.userID + "&$limit=" + limit + "&$skip="
                 + skip;
 
         showSearchLoading();
-        vw.request(getApplication(), url, vw.getRequestsTAG,
+        vw.request(getApplication(), url, Utils.getRequestsTAG,
                 Request.Method.GET, null, callback);
     }
 
@@ -174,7 +174,7 @@ public class PendingFriends extends AppCompatActivity {
             }
         };
 
-        String url = vw.friendsURL;
+        String url = Utils.friendsURL;
         JSONObject body = new JSONObject();
         try {
             body.put("requestID", finalRequestID);
@@ -184,7 +184,7 @@ public class PendingFriends extends AppCompatActivity {
             return;
         }
 
-        vw.request(getApplication(), url, vw.acceptRequestTAG,
+        vw.request(getApplication(), url, Utils.acceptRequestTAG,
                 Request.Method.POST, body, callback);
     }
 
@@ -212,9 +212,9 @@ public class PendingFriends extends AppCompatActivity {
             }
         };
 
-        String url = vw.requestsURL + "/" + requestID;
+        String url = Utils.requestsURL + "/" + requestID;
 
-        vw.request(getApplication(), url, vw.rejectRequestTAG,
+        vw.request(getApplication(), url, Utils.rejectRequestTAG,
                 Request.Method.DELETE, null, callback);
     }
 

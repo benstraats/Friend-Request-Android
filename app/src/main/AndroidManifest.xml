@@ -30,11 +30,6 @@
             android:label="@string/title_activity_profile"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".ViewProfile"
-            android:label="@string/title_activity_view_profile"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait" />
         <activity android:name=".FindFriends"
             android:screenOrientation="portrait" />
         <activity android:name=".PendingFriends"
