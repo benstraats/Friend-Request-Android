@@ -60,4 +60,8 @@
     <string name="profile_activity_delete_yes">Delete</string>
     <string name="profile_activity_delete_no">Cancel</string>
     <string name="profile_activity_delete_success">Successfully deleted friend</string>
+
+    <string name="add_friend_row_add">Add</string>
+
+    <string name="requested_friend_row_cancel">Cancel</string>
 </resources>
