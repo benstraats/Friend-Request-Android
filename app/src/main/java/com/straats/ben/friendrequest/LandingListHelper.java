@@ -2,6 +2,7 @@ package com.straats.ben.friendrequest;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.support.constraint.ConstraintLayout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -103,7 +104,7 @@ public class LandingListHelper {
         rowList.clear();
         numRequests = 0;
 
-        HeadingRow pendingHeader = new HeadingRow(0,"Pending Friends", "Tap to expand");
+        PendingFriendHeaderRow pendingHeader = new PendingFriendHeaderRow(0,"Pending Friends", "Tap to expand");
         pendingHeader.hideRow();
         rowList.add(0, pendingHeader);
     }
@@ -134,7 +135,7 @@ public class LandingListHelper {
                     int total = Integer.parseInt(response.getString("total"));
 
                     absoluteTotal = total;
-                    ((HeadingRow) rowList.get(0)).setHeadingText("Pending Friends (" + total + ")");
+                    ((PendingFriendHeaderRow) rowList.get(0)).setHeadingText("Pending Friends (" + total + ")");
 
                     if (total == 0) {
                         rowList.get(0).hideRow();
@@ -386,8 +387,34 @@ public class LandingListHelper {
         }
 
         public void onRowClick(View v) {
-            //TODO: refactor into passed in arg
+        }
 
+        public String rowType() {
+            return "heading";
+        }
+
+        public void setHeadingText(String headingText) {
+            this.headingText = headingText;
+            mainTextView.setText(headingText);
+        }
+
+        public void setSubText(String subText) {
+            this.subText = subText;
+            subTextView.setText(subText);
+        }
+    }
+
+    public class PendingFriendHeaderRow extends HeadingRow {
+
+        public PendingFriendHeaderRow(int index, String headingText, String subText) {
+            super(index, headingText, subText);
+
+            //Unsure if the pending friends heading row should be grey aswell
+            //row.setBackgroundColor(c.getResources().getColor(R.color.lightGrey));
+        }
+
+        @Override
+        public void onRowClick(View v) {
             if (pendingCollapsed) {
                 pendingCollapsed = false;
                 setSubText("Tap to collapse");
@@ -406,20 +433,6 @@ public class LandingListHelper {
                     }
                 }
             }
-        }
-
-        public String rowType() {
-            return "heading";
-        }
-
-        public void setHeadingText(String headingText) {
-            this.headingText = headingText;
-            mainTextView.setText(headingText);
-        }
-
-        public void setSubText(String subText) {
-            this.subText = subText;
-            subTextView.setText(subText);
         }
     }
 
@@ -476,7 +489,7 @@ public class LandingListHelper {
                                 rowList.get(0).hideRow();
                             }
                             absoluteTotal--;
-                            ((HeadingRow) rowList.get(0)).setHeadingText("Pending Friends (" + absoluteTotal + ")");
+                            ((PendingFriendHeaderRow) rowList.get(0)).setHeadingText("Pending Friends (" + absoluteTotal + ")");
                         }
 
                         @Override
@@ -518,7 +531,7 @@ public class LandingListHelper {
                             }
 
                             absoluteTotal--;
-                            ((HeadingRow) rowList.get(0)).setHeadingText("Pending Friends (" + absoluteTotal + ")");
+                            ((PendingFriendHeaderRow) rowList.get(0)).setHeadingText("Pending Friends (" + absoluteTotal + ")");
                             destroy();
                             if (rowList.get(1).rowType().equals("friend")) {
                                 rowList.get(0).hideRow();
