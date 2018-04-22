@@ -3,8 +3,11 @@ package com.straats.ben.friendrequest;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.widget.Toast;
 
+import com.android.volley.Request;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -110,5 +113,14 @@ public class Utils {
             return null;
         }
         return a;
+    }
+
+    //All http calls section
+    protected static void searchUsers(Context c, String search, int searchSkip, int searchLimit, VolleyWrapper.VolleyCallback callback) {
+
+        final VolleyWrapper vw = VolleyWrapper.getInstance(c);
+        String url = Utils.searchURL + "/" + search + "?$limit=" + searchLimit + "&$skip=" +
+                searchSkip;
+        vw.request(c, url, Utils.searchUsersTAG, Request.Method.GET, null, callback);
     }
 }
