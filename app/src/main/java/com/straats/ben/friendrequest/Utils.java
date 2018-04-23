@@ -29,7 +29,7 @@ public class Utils {
 
     //Not sure if these constants should be in Utils or VolleyWrapper
     //URLs Section
-    protected final static String baseURL = "http://api.friendrequest.ca/";
+    protected final static String baseURL = "http://192.168.2.25:3030/";
     protected final static String usersURL = baseURL + "users";
     protected final static String authenticationURL = baseURL + "authentication";
     protected final static String friendsURL = baseURL + "friends";
@@ -122,5 +122,48 @@ public class Utils {
         String url = Utils.searchURL + "/" + search + "?$limit=" + searchLimit + "&$skip=" +
                 searchSkip;
         vw.request(c, url, Utils.searchUsersTAG, Request.Method.GET, null, callback);
+    }
+
+    protected static void acceptRequest(Context c, final String requestID, VolleyWrapper.VolleyCallback callback) {
+
+        final VolleyWrapper vw = VolleyWrapper.getInstance(c);
+
+        String url = Utils.friendsURL;
+        JSONObject body = new JSONObject();
+        try {
+            body.put("requestID", requestID);
+        } catch (JSONException e) {
+            Toast.makeText(c, R.string.parse_failure, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        vw.request(c, url, Utils.acceptRequestTAG, Request.Method.POST, body, callback);
+    }
+
+    protected static void rejectRequest(Context c, final String requestID, VolleyWrapper.VolleyCallback callback) {
+
+        final VolleyWrapper vw = VolleyWrapper.getInstance(c);
+
+        String url = Utils.requestsURL + "/" + requestID;
+
+        vw.request(c, url, Utils.rejectRequestTAG, Request.Method.DELETE, null, callback);
+    }
+
+    protected static void requestUser(Context c, final String userID, VolleyWrapper.VolleyCallback callback) {
+
+        final VolleyWrapper vw = VolleyWrapper.getInstance(c);
+
+        String url = Utils.requestsURL;
+
+        JSONObject body = new JSONObject();
+        try {
+            body.put("requesteeID", userID);
+        } catch (JSONException e) {
+            Toast.makeText(c, R.string.find_friends_activity_add_user_failure,
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        vw.request(c, Utils.requestsURL, Utils.requestUserTAG, Request.Method.POST, body, callback);
     }
 }

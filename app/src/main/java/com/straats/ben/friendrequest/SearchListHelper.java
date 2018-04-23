@@ -1,13 +1,14 @@
 package com.straats.ben.friendrequest;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.constraint.ConstraintLayout;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -31,7 +32,12 @@ public class SearchListHelper {
 
     private int limit = 50;
 
-    private ArrayList<CustomRow> rowList;
+    private ArrayList<SearchRow> rowList;
+
+    private final String friendStatus = "friend";
+    private final String notFriendStatus = "not friends";
+    private final String requesteeStatus = "requestee";
+    private final String requesterStatus = "requester";
 
     public SearchListHelper(Context context, TableLayout list, EditText text, Button search, ProgressBar pgBar) {
         this.c = context;
@@ -62,6 +68,8 @@ public class SearchListHelper {
 
                         boolean statusFound = false;
                         String searchedUserID = usersSection.getJSONArray("data").getJSONObject(i).getString("_id");
+                        String usersUsername = usersSection.getJSONArray("data").getJSONObject(i).getString("email");
+                        String usersName = usersSection.getJSONArray("data").getJSONObject(i).getString("name");
 
                         for (int j=0; j<numFriends; j++) {
                             String user1 = friendsSection.getJSONArray("data").getJSONObject(j).getString("user1");
@@ -69,19 +77,13 @@ public class SearchListHelper {
 
                             if (user1.equals(searchedUserID)) {
                                 String friendID = friendsSection.getJSONArray("data").getJSONObject(j).getString("_id");
-                                String friendUsername = usersSection.getJSONArray("data").getJSONObject(i).getString("email");
-                                String friendName = usersSection.getJSONArray("data").getJSONObject(i).getString("name");
-
-                                rowList.add(new FriendRow(rowList.size(), friendID, user1, friendUsername, friendName));
+                                rowList.add(new SearchRow(rowList.size(), friendID, user1, usersUsername, usersName, friendStatus));
 
                                 statusFound = true;
                                 break;
                             } else if (user2.equals(searchedUserID)) {
                                 String friendID = friendsSection.getJSONArray("data").getJSONObject(j).getString("_id");
-                                String friendUsername = usersSection.getJSONArray("data").getJSONObject(i).getString("email");
-                                String friendName = usersSection.getJSONArray("data").getJSONObject(i).getString("name");
-
-                                rowList.add(new FriendRow(rowList.size(), friendID, user2, friendUsername, friendName));
+                                rowList.add(new SearchRow(rowList.size(), friendID, user2, usersUsername, usersName, friendStatus));
 
                                 statusFound = true;
                                 break;
@@ -95,17 +97,13 @@ public class SearchListHelper {
 
                                 if (requester.equals(searchedUserID)) {
                                     String requestID = requestsSection.getJSONArray("data").getJSONObject(j).getString("_id");
-                                    String usersUsername = usersSection.getJSONArray("data").getJSONObject(i).getString("email");
-                                    String usersName = usersSection.getJSONArray("data").getJSONObject(i).getString("name");
-                                    rowList.add(new RequestedFriendRow(rowList.size(), requestID, searchedUserID, usersUsername, usersName));
+                                    rowList.add(new SearchRow(rowList.size(), requestID, searchedUserID, usersUsername, usersName, requesteeStatus));
 
                                     statusFound = true;
                                     break;
                                 } else if (requestee.equals(searchedUserID)) {
                                     String requestID = requestsSection.getJSONArray("data").getJSONObject(j).getString("_id");
-                                    String usersUsername = usersSection.getJSONArray("data").getJSONObject(i).getString("email");
-                                    String usersName = usersSection.getJSONArray("data").getJSONObject(i).getString("name");
-                                    rowList.add(new PendingFriendRow(rowList.size(), requestID, searchedUserID, usersUsername, usersName));
+                                    rowList.add(new SearchRow(rowList.size(), requestID, searchedUserID, usersUsername, usersName, requesterStatus));
 
                                     statusFound = true;
                                     break;
@@ -114,10 +112,7 @@ public class SearchListHelper {
                         }
 
                         if (!statusFound) {
-                            String usersUsername = usersSection.getJSONArray("data").getJSONObject(i).getString("email");
-                            String usersName = usersSection.getJSONArray("data").getJSONObject(i).getString("name");
-
-                            rowList.add(new AddUserRow(rowList.size(), searchedUserID, usersUsername, usersName));
+                            rowList.add(new SearchRow(rowList.size(), null, searchedUserID, usersUsername, usersName, notFriendStatus));
                         }
                     }
                 }
@@ -152,9 +147,58 @@ public class SearchListHelper {
         searchButton.setVisibility(View.VISIBLE);
     }
 
-    private abstract class CustomRow {
+    private class SearchRow{
 
-        TableRow row;
+        private TableRow row;
+        private TextView mainTextView;
+        private TextView subTextView;
+        private TextView statusText;
+        private ProgressBar loadingBar;
+
+        private String itemID;
+        private String otherUserID;
+        private String status;
+        private String otherUserName;
+
+        private boolean loading;
+
+        public SearchRow(int index, String itemID, String otherUserID, String otherUserUsername, String otherUserName, String status) {
+            this.itemID = itemID;
+            this.otherUserID = otherUserID;
+            this.status = status;
+            this.otherUserName = otherUserName;
+            loading = false;
+
+            row = (TableRow) LayoutInflater.from(c).inflate(R.layout.search_row, null);
+            row.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onRowClick(v);
+                }
+            });
+
+            ConstraintLayout cl = (ConstraintLayout) row.getChildAt(0);
+
+            mainTextView = (TextView) cl.getChildAt(0);
+            subTextView = (TextView) cl.getChildAt(1);
+            statusText = (TextView) cl.getChildAt(2);
+
+            mainTextView.setText(otherUserUsername);
+            subTextView.setText(otherUserName);
+            statusText.setText(status);
+
+            loadingBar = (ProgressBar) cl.getChildAt(3);
+            hideLoad();
+
+            row.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onRowClick(v);
+                }
+            });
+
+            mainList.addView(row, index);
+        }
 
         public void showRow() {
             row.setVisibility(View.VISIBLE);
@@ -168,188 +212,161 @@ public class SearchListHelper {
             return row.getVisibility() == View.VISIBLE;
         }
 
-        public void destroy() {
-            mainList.removeViewAt(rowList.indexOf(this));
-            rowList.remove(this);
+        private void setStatus(String newStatus) {
+            status = newStatus;
+            statusText.setText(newStatus);
         }
 
-        abstract String rowType();
-        abstract void onRowClick(View v);
-    }
-
-    private class FriendRow extends CustomRow{
-
-        private String friendID;
-        private String friendUserID;
-
-        public FriendRow(int index, String friendID, String friendUserID, String friendUsername, String friendName) {
-            this.friendID = friendID;
-            this.friendUserID = friendUserID;
-
-            row = (TableRow) LayoutInflater.from(c).inflate(R.layout.landing_friend_row, null);
-            row.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onRowClick(v);
-                }
-            });
-
-            ConstraintLayout cl = (ConstraintLayout) row.getChildAt(0);
-
-            TextView mainTextView = (TextView) cl.getChildAt(0);
-            TextView subTextView = (TextView) cl.getChildAt(1);
-
-            mainTextView.setText(friendName);
-            subTextView.setText(friendUsername);
-
-            mainList.addView(row, index);
+        public void showLoad() {
+            loading = true;
+            loadingBar.setVisibility(View.VISIBLE);
+            statusText.setVisibility(View.INVISIBLE);
         }
 
-        public String rowType() {
-            return "friend";
+        public void hideLoad() {
+            loading = false;
+            loadingBar.setVisibility(View.INVISIBLE);
+            statusText.setVisibility(View.VISIBLE);
         }
 
         public void onRowClick(View v) {
-            Intent intent = new Intent(c, Profile.class);
-            intent.putExtra("friendUserID", friendUserID);
-            intent.putExtra("friendID", friendID);
-            c.startActivity(intent);
-        }
-    }
 
-    private class AddUserRow extends CustomRow{
+            if (!loading) {
+                if (status.equals(friendStatus)) {
+                    Intent intent = new Intent(c, Profile.class);
+                    intent.putExtra("friendUserID", otherUserID);
+                    intent.putExtra("friendID", itemID);
+                    c.startActivity(intent);
+                } else {
 
-        private String usersID;
+                    final String title;
+                    final String message;
+                    final String positiveText;
+                    final String negativeText;
 
-        public AddUserRow(int index, String usersID, String usersUsername, String usersName) {
-            this.usersID = usersID;
+                    if (status.equals(requesteeStatus)) {
+                        title = "Accept Request?";
+                        message = "Are you sure you want to accept the friend request from " + otherUserName;
+                        positiveText = "Accept";
+                        negativeText = "Reject";
+                    } else if (status.equals(requesterStatus)) {
+                        title = "Cancel Request?";
+                        message = "Are you sure you want to cancel the friend request to " + otherUserName;
+                        positiveText = "Cancel";
+                        negativeText = "Don\'t Cancel";
+                    } else {
+                        title = "Request User?";
+                        message = "Are you sure you want to request " + otherUserName + " to be your friend?";
+                        positiveText = "Request";
+                        negativeText = "Cancel";
+                    }
 
-            row = (TableRow) LayoutInflater.from(c).inflate(R.layout.add_friend_row, null);
-            row.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onRowClick(v);
+                    AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(c);
+
+                    builder.setTitle(title);
+                    builder.setMessage(message);
+
+                    builder.setPositiveButton(positiveText, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (status.equals(requesteeStatus)) {
+                                acceptRequest();
+                            } else if (status.equals(requesterStatus)) {
+                                cancelRequest();
+                            } else {
+                                requestUser();
+                            }
+                        }
+                    }).setNegativeButton(negativeText, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (status.equals(requesteeStatus)) {
+                                rejectRequest();
+                            } else if (status.equals(requesterStatus)) {
+                                //Do Nothing
+                            } else {
+                                //Do Nothing
+                            }
+                        }
+                    });
+
+                    builder.show();
                 }
-            });
-
-            ConstraintLayout cl = (ConstraintLayout) row.getChildAt(0);
-
-            TextView mainTextView = (TextView) cl.getChildAt(0);
-            TextView subTextView = (TextView) cl.getChildAt(1);
-
-            mainTextView.setText(usersUsername);
-            subTextView.setText(usersName);
-
-            mainList.addView(row, index);
+            }
         }
 
-        public String rowType() {
-            return "add";
-        }
+        private void acceptRequest() {
+            showLoad();
 
-        public void onRowClick(View v) {
-            Toast.makeText(c, "Show confirmation to add " + usersID, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private class RequestedFriendRow extends CustomRow{
-
-        private final String requestID;
-        private String requestUserID;
-
-        public RequestedFriendRow(int index, final String requestID, String requestUserID, String usersUsername, String usersName) {
-            this.requestID = requestID;
-            this.requestUserID = requestUserID;
-
-            row = (TableRow) LayoutInflater.from(c).inflate(R.layout.requested_friend_row, null);
-            row.setOnClickListener(new View.OnClickListener() {
+            VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
                 @Override
-                public void onClick(View v) {
-                    onRowClick(v);
+                public void onSuccess(JSONObject response) {
+                    hideLoad();
+                    try {
+                        itemID = response.getString("_id");
+                        setStatus(friendStatus);
+                    } catch (JSONException e) {
+                        Toast.makeText(c, R.string.bad_response, Toast.LENGTH_SHORT).show();
+                    }
                 }
-            });
 
-            ConstraintLayout cl = (ConstraintLayout) row.getChildAt(0);
-
-            TextView mainTextView = (TextView) cl.getChildAt(0);
-            TextView subTextView = (TextView) cl.getChildAt(1);
-
-            mainTextView.setText(usersUsername);
-            subTextView.setText(usersName);
-
-            Button cancelButton = (Button) cl.getChildAt(2);
-
-            cancelButton.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
-                    Toast.makeText(c, "Cancel the request " + requestID, Toast.LENGTH_SHORT).show();
+                public void onFailure(VolleyError error) {
+                    hideLoad();
+                    Toast.makeText(c, Utils.decodeError(error), Toast.LENGTH_SHORT).show();
                 }
-            });
+            };
 
-            mainList.addView(row, index);
+            Utils.acceptRequest(c, itemID, callback);
         }
 
-        public String rowType() {
-            return "requested";
-        }
+        private void rejectRequest() {
+            showLoad();
 
-        public void onRowClick(View v) {
-            Toast.makeText(c, "Show confirmation to cancel request " + requestID, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private class PendingFriendRow extends CustomRow {
-
-        private final String requestID;
-        private String requestUserID;
-
-        public PendingFriendRow(int index, final String requestID, String requestUserID, String usersUsername, String usersName) {
-            this.requestID = requestID;
-            this.requestUserID = requestUserID;
-
-            row = (TableRow) LayoutInflater.from(c).inflate(R.layout.landing_pending_friend_row, null);
-            row.setOnClickListener(new View.OnClickListener() {
+            VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
                 @Override
-                public void onClick(View v) {
-                    onRowClick(v);
+                public void onSuccess(JSONObject response) {
+                    hideLoad();
+                    itemID = null;
+                    setStatus(notFriendStatus);
                 }
-            });
 
-            ConstraintLayout cl = (ConstraintLayout) row.getChildAt(0);
-
-            TextView mainTextView = (TextView) cl.getChildAt(0);
-            TextView subTextView = (TextView) cl.getChildAt(1);
-
-            mainTextView.setText(usersUsername);
-            subTextView.setText(usersName);
-
-            ImageButton declineButton = (ImageButton) cl.getChildAt(2);
-
-            declineButton.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
-                    Toast.makeText(c, "decline the request " + requestID, Toast.LENGTH_SHORT).show();
+                public void onFailure(VolleyError error) {
+                    hideLoad();
+                    Toast.makeText(c, Utils.decodeError(error), Toast.LENGTH_SHORT).show();
                 }
-            });
+            };
 
-            ImageButton acceptButton = (ImageButton) cl.getChildAt(3);
-
-            acceptButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(c, "accept the request " + requestID, Toast.LENGTH_SHORT).show();
-                }
-            });
-
-            mainList.addView(row, index);
+            Utils.rejectRequest(c, itemID, callback);
         }
 
-        public String rowType() {
-            return "pending";
+        private void cancelRequest() {
+            Toast.makeText(c, "TODO: code this option", Toast.LENGTH_SHORT).show();
         }
 
-        public void onRowClick(View v) {
-            Toast.makeText(c, "Show confirmation to decline/accept request " + requestID, Toast.LENGTH_SHORT).show();
+        private void requestUser() {
+            showLoad();
+
+            VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
+                @Override
+                public void onSuccess(JSONObject response) {
+                    hideLoad();
+
+                    try {
+                        itemID = response.getString("_id");
+                        setStatus(requesterStatus);
+                    } catch (JSONException e) {
+                        Toast.makeText(c, R.string.parse_failure, Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(VolleyError error) {
+                    hideLoad();
+                    Toast.makeText(c, Utils.decodeError(error), Toast.LENGTH_SHORT).show();
+                }
+            };
+
+            Utils.requestUser(c, otherUserID, callback);
         }
     }
 }
