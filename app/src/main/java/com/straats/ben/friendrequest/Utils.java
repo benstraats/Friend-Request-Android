@@ -29,7 +29,7 @@ public class Utils {
 
     //Not sure if these constants should be in Utils or VolleyWrapper
     //URLs Section
-    protected final static String baseURL = "http://192.168.2.25:3030/";
+    protected final static String baseURL = "http://api.friendrequest.ca/";
     protected final static String usersURL = baseURL + "users";
     protected final static String authenticationURL = baseURL + "authentication";
     protected final static String friendsURL = baseURL + "friends";
