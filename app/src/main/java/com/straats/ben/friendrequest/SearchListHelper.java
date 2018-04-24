@@ -271,7 +271,7 @@ public class SearchListHelper {
                             if (status.equals(requesteeStatus)) {
                                 acceptRequest();
                             } else if (status.equals(requesterStatus)) {
-                                cancelRequest();
+                                rejectRequest();
                             } else {
                                 requestUser();
                             }
@@ -337,10 +337,6 @@ public class SearchListHelper {
             };
 
             Utils.rejectRequest(c, itemID, callback);
-        }
-
-        private void cancelRequest() {
-            Toast.makeText(c, "TODO: code this option", Toast.LENGTH_SHORT).show();
         }
 
         private void requestUser() {
