@@ -51,28 +51,6 @@ public class Utils {
     protected final static String viewProfileTAG = "View Profile";
     protected final static String saveProfileTAG = "Save Profile";
 
-    protected static String getUserInfo(String usersID, JSONObject users) {
-        try {
-            JSONObject data = users.getJSONObject("data");
-            int total = data.getInt("total");
-            int limit = data.getInt("limit");
-
-            JSONArray userData = data.getJSONArray("data");
-
-            int num = Math.min(total, limit);
-
-            for (int i=0; i<num; i++) {
-                if (userData.getJSONObject(i).getString("_id").equals(usersID)) {
-                    JSONObject correctUser = userData.getJSONObject(i);
-                    return correctUser.getString("name") + " (" + correctUser.getString("email") + ")";
-                }
-            }
-        } catch (JSONException e) {
-            return "Failed to parse user";
-        }
-        return "User data not found";
-    }
-
     protected static boolean isNetworkAvailable(Context c) {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -93,26 +71,6 @@ public class Utils {
         } catch (JSONException e) {
             return "Generic Error";
         }
-    }
-
-    //b is appended to a
-    protected static JSONArray combineArray(JSONArray a, JSONArray b) {
-
-        if (a == null) {
-            return b;
-        } else if (b == null) {
-            return a;
-        }
-
-        try {
-            int aLength = a.length();
-            for (int i = 0; i < b.length(); i++) {
-                a.put(i+aLength, b.getJSONObject(i));
-            }
-        } catch (JSONException e) {
-            return null;
-        }
-        return a;
     }
 
     //All http calls section
