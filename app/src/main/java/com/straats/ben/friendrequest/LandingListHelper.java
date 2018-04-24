@@ -124,8 +124,6 @@ public class LandingListHelper {
         showLoading();
         currentlyLoadingPending = true;
 
-        final VolleyWrapper vw = VolleyWrapper.getInstance(c);
-
         VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
@@ -190,8 +188,7 @@ public class LandingListHelper {
             }
         };
 
-        String url = Utils.myRequestsURL + "?$limit=" + limit + "&$skip=" + skip;
-        vw.request(c, url, Utils.getRequestsTAG, Request.Method.GET, null, callback);
+        Utils.getRequests(c, skip, limit, callback);
     }
 
     private void getFriends(final int skip, final int limit) {
@@ -258,32 +255,7 @@ public class LandingListHelper {
             }
         };
 
-        String url = Utils.myFriendsURL + "?$limit=" + limit + "&$skip=" + skip;
-        vw.request(c, url, Utils.getFriendsTAG, Request.Method.GET, null, callback);
-    }
-
-    private void acceptRequest(final String requestID, VolleyWrapper.VolleyCallback callback) {
-
-        final VolleyWrapper vw = VolleyWrapper.getInstance(c);
-
-        String url = Utils.friendsURL;
-        JSONObject body = new JSONObject();
-        try {
-            body.put("requestID", requestID);
-        } catch (JSONException e) {
-            Toast.makeText(c, R.string.parse_failure, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        vw.request(c, url, Utils.acceptRequestTAG, Request.Method.POST, body, callback);
-    }
-
-    private void rejectRequest(final String requestID, VolleyWrapper.VolleyCallback callback) {
-        final VolleyWrapper vw = VolleyWrapper.getInstance(c);
-
-        String url = Utils.requestsURL + "/" + requestID;
-
-        vw.request(c, url, Utils.rejectRequestTAG, Request.Method.DELETE, null, callback);
+        Utils.getFriends(c, skip, limit, callback);
     }
 
     private void showLoading() {
@@ -516,7 +488,7 @@ public class LandingListHelper {
                     };
 
                     showLoading();
-                    rejectRequest(requestID, callback);
+                    Utils.rejectRequest(c, requestID, callback);
                 }
             });
 
@@ -562,7 +534,7 @@ public class LandingListHelper {
                     };
 
                     showLoading();
-                    acceptRequest(requestID, callback);
+                    Utils.acceptRequest(c, requestID, callback);
                 }
             });
 

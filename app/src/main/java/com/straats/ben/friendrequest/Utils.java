@@ -164,4 +164,20 @@ public class Utils {
 
         vw.request(c, Utils.requestsURL, Utils.requestUserTAG, Request.Method.POST, body, callback);
     }
+
+    protected static void getRequests(Context c, final int skip, final int limit, VolleyWrapper.VolleyCallback callback) {
+
+        final VolleyWrapper vw = VolleyWrapper.getInstance(c);
+
+        String url = Utils.myRequestsURL + "?$limit=" + limit + "&$skip=" + skip;
+        vw.request(c, url, Utils.getRequestsTAG, Request.Method.GET, null, callback);
+    }
+
+    protected static void getFriends(Context c, final int skip, final int limit, VolleyWrapper.VolleyCallback callback) {
+
+        final VolleyWrapper vw = VolleyWrapper.getInstance(c);
+
+        String url = Utils.myFriendsURL + "?$limit=" + limit + "&$skip=" + skip;
+        vw.request(c, url, Utils.getFriendsTAG, Request.Method.GET, null, callback);
+    }
 }
