@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.Toast;
 
@@ -32,12 +33,13 @@ public class FindFriends extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find_friends);
 
+        ScrollView sv = findViewById(R.id.scrollView);
         TableLayout mainListView = findViewById(R.id.mainList);
         EditText searchEditText = findViewById(R.id.SearchEditText);
         Button searchButton = findViewById(R.id.SearchButton);
         ProgressBar loadingBar = findViewById(R.id.searchLoadingBar);
 
-        new SearchListHelper(this, mainListView, searchEditText, searchButton, loadingBar);
+        new SearchListHelper(this, sv, mainListView, searchEditText, searchButton, loadingBar);
     }
 
 }

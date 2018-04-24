@@ -3,6 +3,7 @@ package com.straats.ben.friendrequest;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -71,6 +72,13 @@ public class Utils {
         } catch (JSONException e) {
             return "Generic Error";
         }
+    }
+
+    protected static double getPercentScrolled(ScrollView sv) {
+        //This eqn is fucked
+        float scrollY = sv.getScrollY();
+        int totalHeight = sv.getChildAt(0).getHeight();
+        return (scrollY/totalHeight) * 100;
     }
 
     //All http calls section

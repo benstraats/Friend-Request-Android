@@ -7,9 +7,11 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -25,12 +27,18 @@ import java.util.ArrayList;
 public class SearchListHelper {
 
     private Context c;
+    private ScrollView scrollView;
     private final TableLayout mainList;
     private EditText searchEditText;
     private Button searchButton;
     private ProgressBar progressBar;
 
     private int limit = 50;
+    private int skip = 0;
+    private String currentSearchText;
+
+    private boolean currentlySearching;
+    private boolean fullyDoneSearching;
 
     private ArrayList<SearchRow> rowList;
 
@@ -39,18 +47,28 @@ public class SearchListHelper {
     private final String requesteeStatus = "Accept/Decline Request";
     private final String requesterStatus = "Cancel Request";
 
-    public SearchListHelper(Context context, TableLayout list, EditText text, Button search, ProgressBar pgBar) {
+    public SearchListHelper(Context context, ScrollView sv, TableLayout list, EditText text, Button search, ProgressBar pgBar) {
         this.c = context;
+        this.scrollView = sv;
         this.mainList = list;
         this.searchEditText = text;
         this.searchButton = search;
         this.progressBar = pgBar;
+
+        currentlySearching = false;
+        fullyDoneSearching = true;
 
         rowList = new ArrayList<>();
 
         final VolleyWrapper.VolleyCallback requestCallback = new VolleyWrapper.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
+                hideSearchLoading();
+
+                if (skip == 0) {
+                    wipeList();
+                }
+
                 try {
                     JSONObject usersSection = response.getJSONObject("users");
                     JSONObject friendsSection = response.getJSONObject("friends");
@@ -58,8 +76,11 @@ public class SearchListHelper {
 
                     int total = Integer.parseInt(usersSection.getString("total"));
 
-                    int skip = 0;
                     int numUsers = Math.min((total-skip), limit);
+
+                    if (numUsers < limit || (skip + numUsers) == total) {
+                        fullyDoneSearching = true;
+                    }
 
                     int numFriends = Integer.parseInt(friendsSection.getString("total"));
                     int numRequests = Integer.parseInt(requestsSection.getString("total"));
@@ -115,15 +136,19 @@ public class SearchListHelper {
                             rowList.add(new SearchRow(rowList.size(), null, searchedUserID, usersUsername, usersName, notFriendStatus));
                         }
                     }
+                    currentlySearching = false;
                 }
 
                 catch (JSONException e) {
+                    currentlySearching = false;
                     Toast.makeText(c, R.string.parse_failure, Toast.LENGTH_SHORT);
                 }
             }
 
             @Override
             public void onFailure(VolleyError error) {
+                hideSearchLoading();
+                currentlySearching = false;
                 Toast.makeText(c, R.string.bad_response, Toast.LENGTH_SHORT);
             }
         };
@@ -131,10 +156,39 @@ public class SearchListHelper {
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utils.searchUsers(v.getContext(), searchEditText.getText().toString(), 0,
-                        limit, requestCallback);
+                showSearchLoading();
+                currentSearchText = searchEditText.getText().toString();
+                currentlySearching = true;
+                fullyDoneSearching = false;
+                skip = 0;
+                Utils.searchUsers(v.getContext(), currentSearchText, 0, limit,
+                        requestCallback);
             }
         });
+
+        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+
+                if (!currentlySearching && !fullyDoneSearching) {
+                    double currentPosition = Utils.getPercentScrolled(scrollView);
+
+                    if (currentPosition >= 50) {
+                        showSearchLoading();
+                        currentlySearching = true;
+                        fullyDoneSearching = false;
+                        skip += limit;
+                        Utils.searchUsers(c, currentSearchText, skip, limit,
+                                requestCallback);
+                    }
+                }
+            }
+        });
+    }
+
+    private void wipeList() {
+        mainList.removeAllViews();
+        rowList.clear();
     }
 
     private void showSearchLoading() {

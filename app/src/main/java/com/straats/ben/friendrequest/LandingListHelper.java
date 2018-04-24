@@ -67,7 +67,7 @@ public class LandingListHelper {
 
                 if (!pendingCollapsed && !currentlyLoadingPending && !fullyDoneLoadingPending) {
                     //check if at last 20 pending friends then load next bunch
-                    currentPosition = getPercentScrolled(scrollView);
+                    currentPosition = Utils.getPercentScrolled(scrollView);
 
                     double pendingPercent = (pendingTotal / ((double) mainList.getChildCount())) * 100;
                     if (currentPosition >= (pendingPercent-25)) {
@@ -79,7 +79,7 @@ public class LandingListHelper {
                 if (!currentlyLoadingFriends && !fullyDoneLoadingFriends) {
                     //Dont want to calc again if we dont have to
                     if (currentPosition == 0.0) {
-                        currentPosition = getPercentScrolled(scrollView);
+                        currentPosition = Utils.getPercentScrolled(scrollView);
                     }
 
                     if (currentPosition >= 30) {
@@ -89,13 +89,6 @@ public class LandingListHelper {
                 }
             }
         });
-    }
-
-    private double getPercentScrolled(ScrollView sv) {
-        //This eqn is fucked
-        float scrollY = sv.getScrollY();
-        int totalHeight = sv.getChildAt(0).getHeight();
-        return (scrollY/totalHeight) * 100;
     }
 
     public void wipeList() {
