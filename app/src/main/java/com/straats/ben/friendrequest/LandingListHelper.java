@@ -59,7 +59,6 @@ public class LandingListHelper {
         rowList = new ArrayList<>();
 
         wipeList();
-        initialLoad();
 
         scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
             @Override
@@ -131,6 +130,11 @@ public class LandingListHelper {
             @Override
             public void onSuccess(JSONObject response) {
 
+                //Initial load
+                if (skip == 0 && currentlyLoadingFriends) {
+                    wipeList();
+                }
+
                 try {
                     JSONObject requestSection = response.getJSONObject("requests");
                     JSONObject userSection = response.getJSONObject("users");
@@ -167,7 +171,7 @@ public class LandingListHelper {
 
                     //Initial load
                     if (skip == 0) {
-                        rowList.get(0).onRowClick(null);
+                        ((PendingFriendHeaderRow)rowList.get(0)).hideRows();
                     }
 
                 } catch (JSONException e) {
@@ -200,6 +204,10 @@ public class LandingListHelper {
         VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
+
+                if (skip == 0 && currentlyLoadingPending) {
+                    wipeList();
+                }
 
                 try {
 
@@ -412,25 +420,34 @@ public class LandingListHelper {
             //row.setBackgroundColor(c.getResources().getColor(R.color.lightGrey));
         }
 
-        @Override
-        public void onRowClick(View v) {
-            if (pendingCollapsed) {
-                pendingCollapsed = false;
-                setSubText("Tap to collapse");
-
-            } else {
-                pendingCollapsed = true;
-                setSubText("Tap to expand");
-            }
+        public void hideRows() {
+            pendingCollapsed = true;
+            setSubText("Tap to expand");
 
             for (CustomRow item : rowList) {
                 if (item.rowType().equals("pending")) {
-                    if (pendingCollapsed) {
-                        item.hideRow();
-                    } else {
-                        item.showRow();
-                    }
+                    item.hideRow();
                 }
+            }
+        }
+
+        public void showRows() {
+            pendingCollapsed = true;
+            setSubText("Tap to expand");
+
+            for (CustomRow item : rowList) {
+                if (item.rowType().equals("pending")) {
+                    item.showRow();
+                }
+            }
+        }
+
+        @Override
+        public void onRowClick(View v) {
+            if (pendingCollapsed) {
+                showRows();
+            } else {
+                hideRows();
             }
         }
     }

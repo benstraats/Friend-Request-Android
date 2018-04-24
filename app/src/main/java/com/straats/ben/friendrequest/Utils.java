@@ -153,8 +153,6 @@ public class Utils {
 
         final VolleyWrapper vw = VolleyWrapper.getInstance(c);
 
-        String url = Utils.requestsURL;
-
         JSONObject body = new JSONObject();
         try {
             body.put("requesteeID", userID);

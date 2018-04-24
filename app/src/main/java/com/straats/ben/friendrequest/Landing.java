@@ -67,7 +67,6 @@ public class Landing extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        listHelper.wipeList();
         listHelper.initialLoad();
     }
 
