@@ -34,10 +34,10 @@ public class SearchListHelper {
 
     private ArrayList<SearchRow> rowList;
 
-    private final String friendStatus = "friend";
-    private final String notFriendStatus = "not friends";
-    private final String requesteeStatus = "requestee";
-    private final String requesterStatus = "requester";
+    private final String friendStatus = "Friends";
+    private final String notFriendStatus = "Add User";
+    private final String requesteeStatus = "Accept/Decline Request";
+    private final String requesterStatus = "Cancel Request";
 
     public SearchListHelper(Context context, TableLayout list, EditText text, Button search, ProgressBar pgBar) {
         this.c = context;
