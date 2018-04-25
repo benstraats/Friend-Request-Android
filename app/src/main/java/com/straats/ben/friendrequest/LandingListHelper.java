@@ -2,6 +2,7 @@ package com.straats.ben.friendrequest;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.support.constraint.ConstraintLayout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +30,7 @@ public class LandingListHelper {
     private final TableLayout mainList;
     private ProgressBar progressBar;
 
-    private int limit = 49;
+    private int limit = 50;
 
     private boolean pendingCollapsed = false;
     private int pendingTotal;
@@ -58,7 +59,6 @@ public class LandingListHelper {
         rowList = new ArrayList<>();
 
         wipeList();
-        initialLoad();
 
         scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
             @Override
@@ -67,7 +67,7 @@ public class LandingListHelper {
 
                 if (!pendingCollapsed && !currentlyLoadingPending && !fullyDoneLoadingPending) {
                     //check if at last 20 pending friends then load next bunch
-                    currentPosition = getPercentScrolled(scrollView);
+                    currentPosition = Utils.getPercentScrolled(scrollView);
 
                     double pendingPercent = (pendingTotal / ((double) mainList.getChildCount())) * 100;
                     if (currentPosition >= (pendingPercent-25)) {
@@ -79,7 +79,7 @@ public class LandingListHelper {
                 if (!currentlyLoadingFriends && !fullyDoneLoadingFriends) {
                     //Dont want to calc again if we dont have to
                     if (currentPosition == 0.0) {
-                        currentPosition = getPercentScrolled(scrollView);
+                        currentPosition = Utils.getPercentScrolled(scrollView);
                     }
 
                     if (currentPosition >= 30) {
@@ -91,19 +91,12 @@ public class LandingListHelper {
         });
     }
 
-    private double getPercentScrolled(ScrollView sv) {
-        //This eqn is fucked
-        float scrollY = sv.getScrollY();
-        int totalHeight = sv.getChildAt(0).getHeight();
-        return (scrollY/totalHeight) * 100;
-    }
-
     public void wipeList() {
         mainList.removeAllViews();
         rowList.clear();
         numRequests = 0;
 
-        HeadingRow pendingHeader = new HeadingRow(0,"Pending Friends", "Tap to expand");
+        PendingFriendHeaderRow pendingHeader = new PendingFriendHeaderRow(0,"Pending Friends", "Tap to expand");
         pendingHeader.hideRow();
         rowList.add(0, pendingHeader);
     }
@@ -124,17 +117,22 @@ public class LandingListHelper {
         showLoading();
         currentlyLoadingPending = true;
 
-        final VolleyWrapper vw = VolleyWrapper.getInstance(c);
-
         VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
 
-                try {
-                    int total = Integer.parseInt(response.getString("total"));
+                //Initial load
+                if (skip == 0 && currentlyLoadingFriends) {
+                    wipeList();
+                }
 
+                try {
+                    JSONObject requestSection = response.getJSONObject("requests");
+                    JSONObject userSection = response.getJSONObject("users");
+
+                    int total = Integer.parseInt(requestSection.getString("total"));
                     absoluteTotal = total;
-                    ((HeadingRow) rowList.get(0)).setHeadingText("Pending Friends (" + total + ")");
+                    ((PendingFriendHeaderRow) rowList.get(0)).setHeadingText("Pending Friends (" + total + ")");
 
                     if (total == 0) {
                         rowList.get(0).hideRow();
@@ -144,8 +142,7 @@ public class LandingListHelper {
 
                     int numUsers = Math.min((total-skip), limit);
 
-                    JSONArray requestedUsers = response.getJSONArray("data");
-                    JSONObject userInfo = response.getJSONObject("userInfo");
+                    JSONArray requestedUsers = requestSection.getJSONArray("data");
 
                     for (int i=0; i<numUsers; i++) {
                         String id = requestedUsers.getJSONObject(i).getString("_id");
@@ -155,8 +152,8 @@ public class LandingListHelper {
                         int index = numRequests;
 
                         rowList.add(index, new PendingFriendRow(index, id, requester,
-                                getUserName(userInfo, requester),
-                                getUserUsername(userInfo, requester)));
+                                getUserName(userSection, requester),
+                                getUserUsername(userSection, requester)));
                     }
 
                     if (numUsers < limit || (skip + numUsers) == total) {
@@ -165,7 +162,7 @@ public class LandingListHelper {
 
                     //Initial load
                     if (skip == 0) {
-                        rowList.get(0).onRowClick(null);
+                        ((PendingFriendHeaderRow)rowList.get(0)).hideRows();
                     }
 
                 } catch (JSONException e) {
@@ -184,10 +181,7 @@ public class LandingListHelper {
             }
         };
 
-        String url = Utils.requestsURL + "?requestee=" + Utils.userID + "&$limit=" + limit +
-                "&$skip=" + skip;
-
-        vw.request(c, url, Utils.getRequestsTAG, Request.Method.GET, null, callback);
+        Utils.getRequests(c, skip, limit, callback);
     }
 
     private void getFriends(final int skip, final int limit) {
@@ -201,14 +195,20 @@ public class LandingListHelper {
             @Override
             public void onSuccess(JSONObject response) {
 
+                if (skip == 0 && currentlyLoadingPending) {
+                    wipeList();
+                }
+
                 try {
 
-                    int total = Integer.parseInt(response.getString("total"));
+                    JSONObject friendSection = response.getJSONObject("friends");
+                    JSONObject userSection = response.getJSONObject("users");
+
+                    JSONArray friendUsers = friendSection.getJSONArray("data");
+
+                    int total = Integer.parseInt(friendSection.getString("total"));
 
                     int numUsers = Math.min((total-skip), limit);
-
-                    JSONArray friendUsers = response.getJSONArray("data");
-                    JSONObject userInfo = response.getJSONObject("userInfo");
 
                     for (int i=0; i<numUsers; i++) {
                         String id = friendUsers.getJSONObject(i).getString("_id");
@@ -224,8 +224,8 @@ public class LandingListHelper {
                         int index = rowList.size();
 
                         rowList.add(index, new AddedFriendRow(index, id, otherUserID,
-                                getUserName(userInfo, otherUserID),
-                                getUserUsername(userInfo, otherUserID)));
+                                getUserName(userSection, otherUserID),
+                                getUserUsername(userSection, otherUserID)));
                     }
 
                     if (numUsers < limit || (skip + numUsers) == total) {
@@ -248,32 +248,7 @@ public class LandingListHelper {
             }
         };
 
-        String url = Utils.friendsURL + "?$limit=" + limit + "&$skip=" + skip;
-        vw.request(c, url, Utils.getFriendsTAG, Request.Method.GET, null, callback);
-    }
-
-    private void acceptRequest(final String requestID, VolleyWrapper.VolleyCallback callback) {
-
-        final VolleyWrapper vw = VolleyWrapper.getInstance(c);
-
-        String url = Utils.friendsURL;
-        JSONObject body = new JSONObject();
-        try {
-            body.put("requestID", requestID);
-        } catch (JSONException e) {
-            Toast.makeText(c, R.string.parse_failure, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        vw.request(c, url, Utils.acceptRequestTAG, Request.Method.POST, body, callback);
-    }
-
-    private void rejectRequest(final String requestID, VolleyWrapper.VolleyCallback callback) {
-        final VolleyWrapper vw = VolleyWrapper.getInstance(c);
-
-        String url = Utils.requestsURL + "/" + requestID;
-
-        vw.request(c, url, Utils.rejectRequestTAG, Request.Method.DELETE, null, callback);
+        Utils.getFriends(c, skip, limit, callback);
     }
 
     private void showLoading() {
@@ -287,11 +262,10 @@ public class LandingListHelper {
     private String getUserUsername(JSONObject userInfo, String userID) {
 
         try {
-            JSONObject data = userInfo.getJSONObject("data");
-            int total = data.getInt("total");
-            int limit = data.getInt("limit");
+            int total = userInfo.getInt("total");
+            int limit = userInfo.getInt("limit");
 
-            JSONArray userData = data.getJSONArray("data");
+            JSONArray userData = userInfo.getJSONArray("data");
 
             int num = Math.min(total, limit);
 
@@ -309,11 +283,10 @@ public class LandingListHelper {
 
     private String getUserName(JSONObject userInfo, String userID) {
         try {
-            JSONObject data = userInfo.getJSONObject("data");
-            int total = data.getInt("total");
-            int limit = data.getInt("limit");
+            int total = userInfo.getInt("total");
+            int limit = userInfo.getInt("limit");
 
-            JSONArray userData = data.getJSONArray("data");
+            JSONArray userData = userInfo.getJSONArray("data");
 
             int num = Math.min(total, limit);
 
@@ -386,26 +359,6 @@ public class LandingListHelper {
         }
 
         public void onRowClick(View v) {
-            //TODO: refactor into passed in arg
-
-            if (pendingCollapsed) {
-                pendingCollapsed = false;
-                setSubText("Tap to collapse");
-
-            } else {
-                pendingCollapsed = true;
-                setSubText("Tap to expand");
-            }
-
-            for (CustomRow item : rowList) {
-                if (item.rowType().equals("pending")) {
-                    if (pendingCollapsed) {
-                        item.hideRow();
-                    } else {
-                        item.showRow();
-                    }
-                }
-            }
         }
 
         public String rowType() {
@@ -420,6 +373,47 @@ public class LandingListHelper {
         public void setSubText(String subText) {
             this.subText = subText;
             subTextView.setText(subText);
+        }
+    }
+
+    public class PendingFriendHeaderRow extends HeadingRow {
+
+        public PendingFriendHeaderRow(int index, String headingText, String subText) {
+            super(index, headingText, subText);
+
+            //Unsure if the pending friends heading row should be grey aswell
+            //row.setBackgroundColor(c.getResources().getColor(R.color.lightGrey));
+        }
+
+        public void hideRows() {
+            pendingCollapsed = true;
+            setSubText("Tap to expand");
+
+            for (CustomRow item : rowList) {
+                if (item.rowType().equals("pending")) {
+                    item.hideRow();
+                }
+            }
+        }
+
+        public void showRows() {
+            pendingCollapsed = true;
+            setSubText("Tap to expand");
+
+            for (CustomRow item : rowList) {
+                if (item.rowType().equals("pending")) {
+                    item.showRow();
+                }
+            }
+        }
+
+        @Override
+        public void onRowClick(View v) {
+            if (pendingCollapsed) {
+                showRows();
+            } else {
+                hideRows();
+            }
         }
     }
 
@@ -476,7 +470,7 @@ public class LandingListHelper {
                                 rowList.get(0).hideRow();
                             }
                             absoluteTotal--;
-                            ((HeadingRow) rowList.get(0)).setHeadingText("Pending Friends (" + absoluteTotal + ")");
+                            ((PendingFriendHeaderRow) rowList.get(0)).setHeadingText("Pending Friends (" + absoluteTotal + ")");
                         }
 
                         @Override
@@ -487,7 +481,7 @@ public class LandingListHelper {
                     };
 
                     showLoading();
-                    rejectRequest(requestID, callback);
+                    Utils.rejectRequest(c, requestID, callback);
                 }
             });
 
@@ -518,7 +512,7 @@ public class LandingListHelper {
                             }
 
                             absoluteTotal--;
-                            ((HeadingRow) rowList.get(0)).setHeadingText("Pending Friends (" + absoluteTotal + ")");
+                            ((PendingFriendHeaderRow) rowList.get(0)).setHeadingText("Pending Friends (" + absoluteTotal + ")");
                             destroy();
                             if (rowList.get(1).rowType().equals("friend")) {
                                 rowList.get(0).hideRow();
@@ -533,7 +527,7 @@ public class LandingListHelper {
                     };
 
                     showLoading();
-                    acceptRequest(requestID, callback);
+                    Utils.acceptRequest(c, requestID, callback);
                 }
             });
 

@@ -27,7 +27,7 @@ import java.util.ArrayList;
 
 public class Landing extends AppCompatActivity {
 
-    ProgressBar loadingBar;
+    private LandingListHelper listHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,12 +61,13 @@ public class Landing extends AppCompatActivity {
         ScrollView listScroll = findViewById(R.id.listScroll);
         ProgressBar loadingBar = findViewById(R.id.loadingBar);
 
-        new LandingListHelper(this, mainList, listScroll, loadingBar);
+        listHelper = new LandingListHelper(this, mainList, listScroll, loadingBar);
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        listHelper.initialLoad();
     }
 
 }
