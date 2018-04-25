@@ -35,7 +35,8 @@ public class VolleyWrapper {
                            final JSONObject body, final VolleyWrapper.VolleyCallback callback) {
 
         if (!Utils.isNetworkAvailable(c)) {
-            Toast.makeText(c, "No Internet Connection", Toast.LENGTH_SHORT).show();
+            VolleyError err = new VolleyError("No Internet Connection");
+            callback.onFailure(err);
             return;
         }
 
