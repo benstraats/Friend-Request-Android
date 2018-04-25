@@ -8,9 +8,7 @@ import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.Volley;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -84,7 +82,7 @@ public class Utils {
     //All http calls section
     protected static void searchUsers(Context c, String search, int searchSkip, int searchLimit, VolleyWrapper.VolleyCallback callback) {
 
-        final VolleyWrapper vw = VolleyWrapper.getInstance(c);
+        VolleyWrapper vw = VolleyWrapper.getInstance(c);
         String url = Utils.searchURL + "/" + search + "?$limit=" + searchLimit + "&$skip=" +
                 searchSkip;
         vw.request(c, url, Utils.searchUsersTAG, Request.Method.GET, null, callback);
@@ -92,7 +90,7 @@ public class Utils {
 
     protected static void acceptRequest(Context c, final String requestID, VolleyWrapper.VolleyCallback callback) {
 
-        final VolleyWrapper vw = VolleyWrapper.getInstance(c);
+        VolleyWrapper vw = VolleyWrapper.getInstance(c);
 
         String url = Utils.friendsURL;
         JSONObject body = new JSONObject();
@@ -108,16 +106,16 @@ public class Utils {
 
     protected static void rejectRequest(Context c, final String requestID, VolleyWrapper.VolleyCallback callback) {
 
-        final VolleyWrapper vw = VolleyWrapper.getInstance(c);
+        VolleyWrapper vw = VolleyWrapper.getInstance(c);
 
         String url = Utils.requestsURL + "/" + requestID;
 
         vw.request(c, url, Utils.rejectRequestTAG, Request.Method.DELETE, null, callback);
     }
 
-    protected static void requestUser(Context c, final String userID, VolleyWrapper.VolleyCallback callback) {
+    protected static void requestUser(Context c, String userID, VolleyWrapper.VolleyCallback callback) {
 
-        final VolleyWrapper vw = VolleyWrapper.getInstance(c);
+        VolleyWrapper vw = VolleyWrapper.getInstance(c);
 
         JSONObject body = new JSONObject();
         try {
@@ -131,9 +129,9 @@ public class Utils {
         vw.request(c, Utils.requestsURL, Utils.requestUserTAG, Request.Method.POST, body, callback);
     }
 
-    protected static void getRequests(Context c, final int skip, final int limit, VolleyWrapper.VolleyCallback callback) {
+    protected static void getRequests(Context c, int skip, int limit, VolleyWrapper.VolleyCallback callback) {
 
-        final VolleyWrapper vw = VolleyWrapper.getInstance(c);
+        VolleyWrapper vw = VolleyWrapper.getInstance(c);
 
         String url = Utils.myRequestsURL + "?$limit=" + limit + "&$skip=" + skip;
         vw.request(c, url, Utils.getRequestsTAG, Request.Method.GET, null, callback);
@@ -141,9 +139,74 @@ public class Utils {
 
     protected static void getFriends(Context c, final int skip, final int limit, VolleyWrapper.VolleyCallback callback) {
 
-        final VolleyWrapper vw = VolleyWrapper.getInstance(c);
+        VolleyWrapper vw = VolleyWrapper.getInstance(c);
 
         String url = Utils.myFriendsURL + "?$limit=" + limit + "&$skip=" + skip;
         vw.request(c, url, Utils.getFriendsTAG, Request.Method.GET, null, callback);
+    }
+
+    protected static void getUserInfo(Context c, String userEmail, VolleyWrapper.VolleyCallback callback) {
+        VolleyWrapper vw = VolleyWrapper.getInstance(c);
+        String url = Utils.usersURL + "?email=" + userEmail;
+        vw.request(c, url, Utils.searchUsersTAG, Request.Method.GET, null,
+                callback);
+    }
+
+    protected static void signUp(Context c, String username, String name, String password, VolleyWrapper.VolleyCallback callback) {
+        VolleyWrapper vw = VolleyWrapper.getInstance(c);
+
+        JSONObject body = new JSONObject();
+        try {
+            body.put("email", username);
+            body.put("name", name);
+            body.put("password", password);
+        } catch (JSONException e) {
+            Toast.makeText(c, R.string.login_activity_failed_to_signup,
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+        vw.request(c, Utils.usersURL, Utils.signUpTAG,
+                Request.Method.POST, body, callback);
+    }
+
+    protected static void login(Context c, String username, String password, VolleyWrapper.VolleyCallback callback) {
+
+        VolleyWrapper vw = VolleyWrapper.getInstance(c);
+        JSONObject body = new JSONObject();
+        try {
+            body.put("strategy", "local");
+            body.put("email", username);
+            body.put("password", password);
+        } catch (JSONException e) {
+            Toast.makeText(c, R.string.login_activity_failed_to_login,
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        vw.request(c, Utils.authenticationURL, Utils.loginTAG, Request.Method.POST, body, callback);
+    }
+
+    protected static void deleteFriend(Context c, String friendUserID, VolleyWrapper.VolleyCallback callback) {
+        VolleyWrapper vw = VolleyWrapper.getInstance(c);
+        String url = Utils.friendsURL + "/" + friendUserID;
+        vw.request(c, url, Utils.viewProfileTAG, Request.Method.DELETE, null, callback);
+    }
+
+    protected static void getProfile(Context c, String userID, VolleyWrapper.VolleyCallback callback) {
+        VolleyWrapper vw = VolleyWrapper.getInstance(c);
+        String url = Utils.profileURL + "?userID=" + userID;
+        vw.request(c, url, Utils.viewProfileTAG, Request.Method.GET, null, callback);
+    }
+
+    protected static void createProfile(Context c, JSONObject profile, VolleyWrapper.VolleyCallback callback) {
+        VolleyWrapper vw = VolleyWrapper.getInstance(c);
+        vw.request(c, Utils.profileURL, Utils.saveProfileTAG, Request.Method.POST, profile,
+                callback);
+    }
+
+    protected static void updateProfile(Context c, String profileID, JSONObject profile, VolleyWrapper.VolleyCallback callback) {
+        VolleyWrapper vw = VolleyWrapper.getInstance(c);
+        String url = Utils.profileURL + "/" + profileID;
+        vw.request(c, url, Utils.saveProfileTAG, Request.Method.PUT, profile, callback);
     }
 }

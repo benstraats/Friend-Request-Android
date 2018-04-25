@@ -1,8 +1,6 @@
 package com.straats.ben.friendrequest;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -12,10 +10,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +35,8 @@ public class VolleyWrapper {
                            final JSONObject body, final VolleyWrapper.VolleyCallback callback) {
 
         if (!Utils.isNetworkAvailable(c)) {
-            Toast.makeText(c, "No Internet Connection", Toast.LENGTH_SHORT).show();
+            VolleyError err = new VolleyError("No Internet Connection");
+            callback.onFailure(err);
             return;
         }
 

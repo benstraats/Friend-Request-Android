@@ -8,10 +8,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -24,14 +22,11 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
 import com.android.volley.VolleyError;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.HashMap;
 
 public class Profile extends AppCompatActivity {
 
@@ -144,7 +139,6 @@ public class Profile extends AppCompatActivity {
     }
 
     private void getProfile(final String currUserID) {
-        final VolleyWrapper vw = VolleyWrapper.getInstance(getApplicationContext());
         VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
@@ -160,16 +154,11 @@ public class Profile extends AppCompatActivity {
                         Toast.LENGTH_SHORT).show();
             }
         };
-
-        String url = Utils.profileURL + "?userID=" + currUserID;
-
         showLoading();
-        vw.request(getApplication(), url, Utils.viewProfileTAG, Request.Method.GET, null,
-                callback);
+        Utils.getProfile(getApplicationContext(), currUserID, callback);
     }
 
     private void deleteFriend(final String friendID) {
-        final VolleyWrapper vw = VolleyWrapper.getInstance(getApplicationContext());
         VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
@@ -183,15 +172,10 @@ public class Profile extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), Utils.decodeError(error), Toast.LENGTH_SHORT).show();
             }
         };
-
-        String url = Utils.friendsURL + "/" + friendID;
-
-        vw.request(getApplication(), url, Utils.viewProfileTAG,
-                Request.Method.DELETE, null, callback);
+        Utils.deleteFriend(getApplicationContext(), friendID, callback);
     }
 
     private void saveProfile(final View v) {
-        final VolleyWrapper vw = VolleyWrapper.getInstance(getApplicationContext());
         VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
@@ -220,17 +204,14 @@ public class Profile extends AppCompatActivity {
             }
         };
 
-        String url = Utils.profileURL;
-        int method = Request.Method.POST;
-
-        if (!creatingProfile) {
-            url = url + "/" + profileID;
-            method = Request.Method.PUT;
-        }
-
         showLoading();
-        vw.request(getApplication(), url, Utils.saveProfileTAG, method,
-                getProfileJSON(), callback);
+
+        if (creatingProfile) {
+            Utils.createProfile(getApplicationContext(), getProfileJSON(), callback);
+        }
+        else {
+            Utils.updateProfile(getApplicationContext(), profileID, getProfileJSON(), callback);
+        }
     }
 
     private void parseProfile(JSONObject response, boolean initialLoad) {
