@@ -1,9 +1,11 @@
 package com.straats.ben.friendrequest;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.support.constraint.ConstraintLayout;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -551,7 +553,22 @@ public class LandingListHelper {
         }
 
         public void onRowClick(View v) {
-            Toast.makeText(c, "You clicked a pending row", Toast.LENGTH_SHORT).show();
+            AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(c);
+
+            builder.setTitle("Accept Request?");
+            builder.setMessage("Are you sure you want to accept the friend request from " + requesterName);
+
+            builder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    addButton.callOnClick();
+                }
+            }).setNegativeButton("Reject", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    deleteButton.callOnClick();
+                }
+            });
+
+            builder.show();
         }
     }
 
