@@ -312,7 +312,9 @@ public class Profile extends AppCompatActivity {
                     publicCheckbox.setVisibility(View.GONE);
                 } else {
                     deleteButton.setVisibility(View.VISIBLE);
-                    publicCheckbox.setVisibility(View.VISIBLE);
+
+                    //Commenting out since public info feature isn't availible yet
+                    //publicCheckbox.setVisibility(View.VISIBLE);
                 }
             }
         });
