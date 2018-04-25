@@ -42,9 +42,6 @@ public class Login extends AppCompatActivity {
         confirmPasswordTextBox = findViewById(R.id.ConfirmPasswordTextBox);
         loginLoading = findViewById(R.id.loginLoading);
 
-        //confirmPasswordTextBox.setVisibility(View.INVISIBLE);
-        //nameTextBox.setVisibility(View.INVISIBLE);
-
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,8 +97,6 @@ public class Login extends AppCompatActivity {
         }
         else {
 
-            final VolleyWrapper vw = VolleyWrapper.getInstance(getApplicationContext());
-
             VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
                 @Override
                 public void onSuccess(JSONObject response) {
@@ -124,20 +119,9 @@ public class Login extends AppCompatActivity {
                 }
             };
 
-            JSONObject body = new JSONObject();
-            try {
-                body.put("strategy", "local");
-                body.put("email", username);
-                body.put("password", password);
-            } catch (JSONException e) {
-                Toast.makeText(getApplicationContext(), R.string.login_activity_failed_to_login,
-                        Toast.LENGTH_SHORT).show();
-                return;
-            }
-
             showLoading();
-            vw.request(getApplication(), Utils.authenticationURL, Utils.loginTAG,
-                    Request.Method.POST, body, callback);
+
+            Utils.login(getApplicationContext(), username, password, callback);
         }
     }
 
@@ -173,20 +157,6 @@ public class Login extends AppCompatActivity {
                     Toast.LENGTH_SHORT).show();
         }
         else {
-            showLoading();
-
-            final VolleyWrapper vw = VolleyWrapper.getInstance(getApplicationContext());
-
-            JSONObject body = new JSONObject();
-            try {
-                body.put("email", username);
-                body.put("name", name);
-                body.put("password", password);
-            } catch (JSONException e) {
-                Toast.makeText(getApplicationContext(), R.string.login_activity_failed_to_signup,
-                        Toast.LENGTH_SHORT).show();
-                return;
-            }
 
             VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
                 @Override
@@ -203,15 +173,13 @@ public class Login extends AppCompatActivity {
             };
 
             showLoading();
-            vw.request(getApplication(), Utils.usersURL, Utils.signUpTAG,
-                    Request.Method.POST, body, callback);
 
+            Utils.signUp(getApplicationContext(), username, name, password, callback);
         }
     }
 
     private void getCurrentUserInfo(final String userEmail) {
 
-        final VolleyWrapper vw = VolleyWrapper.getInstance(getApplicationContext());
         VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
@@ -237,10 +205,7 @@ public class Login extends AppCompatActivity {
             }
         };
 
-        String url = Utils.usersURL + "?email=" + userEmail;
-
-        vw.request(getApplication(), url, Utils.searchUsersTAG, Request.Method.GET, null,
-                callback);
+        Utils.getUserInfo(getApplicationContext(), userEmail, callback);
     }
 
     private void showLoading() {
