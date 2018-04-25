@@ -2,7 +2,6 @@ package com.straats.ben.friendrequest;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.support.constraint.ConstraintLayout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +14,6 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
 import com.android.volley.VolleyError;
 
 import org.json.JSONArray;
