@@ -6,17 +6,6 @@
     android:layout_height="match_parent"
     tools:context="com.straats.ben.friendrequest.Login">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="@string/login_activity_welcome"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <EditText
         android:id="@+id/UsernameTextBox"
         android:layout_width="wrap_content"
@@ -63,7 +52,7 @@
         android:id="@+id/confirmButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:text="@string/login_activity_signup"
         app:layout_constraintEnd_toEndOf="@+id/ConfirmPasswordTextBox"
         app:layout_constraintTop_toBottomOf="@+id/ConfirmPasswordTextBox" />
@@ -72,28 +61,27 @@
         android:id="@+id/swapButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="8dp"
         android:text="@string/login_activity_have_an_account"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ConfirmPasswordTextBox" />
+        app:layout_constraintTop_toBottomOf="@+id/loginLoading" />
 
     <EditText
         android:id="@+id/NameTextBox"
         android:layout_width="wrap_content"
         android:layout_height="45dp"
-        android:layout_marginTop="16dp"
         android:ems="10"
         android:hint="@string/login_activity_full_name"
         android:inputType="textPersonName"
         android:maxLength="100"
         app:layout_constraintEnd_toEndOf="@+id/UsernameTextBox"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/UsernameTextBox"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView2" />
 
     <ProgressBar
         android:id="@+id/loginLoading"
@@ -105,5 +93,16 @@
         app:layout_constraintEnd_toEndOf="@+id/confirmButton"
         app:layout_constraintStart_toStartOf="@+id/confirmButton"
         app:layout_constraintTop_toTopOf="@+id/confirmButton" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="194dp"
+        android:layout_height="169dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@mipmap/ic_launcher_foreground" />
 
 </android.support.constraint.ConstraintLayout>
