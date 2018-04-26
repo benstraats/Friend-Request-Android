@@ -397,7 +397,7 @@ public class LandingListHelper {
         }
 
         public void showRows() {
-            pendingCollapsed = true;
+            pendingCollapsed = false;
             setSubText("Tap to expand");
 
             for (CustomRow item : rowList) {
