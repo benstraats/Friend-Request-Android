@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -160,12 +161,33 @@ public class SearchListHelper {
                 InputMethodManager imm = (InputMethodManager)v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                 showSearchLoading();
+
+                /* enter keyboard */
+                searchEditText.setOnKeyListener(new View.OnKeyListener()
+                {
+                    public boolean onKey(View v, int keyCode, KeyEvent event)
+                    {
+                        if (event.getAction() == KeyEvent.ACTION_DOWN)
+                        {
+                            switch (keyCode)
+                            {
+                                case KeyEvent.KEYCODE_DPAD_CENTER:
+                                case KeyEvent.KEYCODE_ENTER:
+                                    searchButton.callOnClick();
+                                    return true;
+                                default:
+                                    break;
+                            }
+                        }
+                        return false;
+                    }
+                });
+
+
                 currentSearchText = searchEditText.getText().toString();
                 currentlySearching = true;
                 fullyDoneSearching = false;
                 skip = 0;
-                /* start codinghere */
-
                 Utils.searchUsers(v.getContext(), currentSearchText, 0, limit,
                         requestCallback);
             }
