@@ -323,7 +323,6 @@ public class LandingListHelper {
             rowList.remove(this);
         }
 
-        abstract String rowType();
         abstract void onRowClick(View v);
     }
 
@@ -358,12 +357,7 @@ public class LandingListHelper {
             mainList.addView(row, index);
         }
 
-        public void onRowClick(View v) {
-        }
-
-        public String rowType() {
-            return "heading";
-        }
+        public void onRowClick(View v) {}
 
         public void setHeadingText(String headingText) {
             this.headingText = headingText;
@@ -380,9 +374,6 @@ public class LandingListHelper {
 
         public PendingFriendHeaderRow(int index, String headingText, String subText) {
             super(index, headingText, subText);
-
-            //Unsure if the pending friends heading row should be grey aswell
-            //row.setBackgroundColor(c.getResources().getColor(R.color.lightGrey));
         }
 
         public void hideRows() {
@@ -390,7 +381,7 @@ public class LandingListHelper {
             setSubText("Tap to expand");
 
             for (CustomRow item : rowList) {
-                if (item.rowType().equals("pending")) {
+                if (item.getClass().equals(PendingFriendRow.class)) {
                     item.hideRow();
                 }
             }
@@ -401,7 +392,7 @@ public class LandingListHelper {
             setSubText("Tap to collapse");
 
             for (CustomRow item : rowList) {
-                if (item.rowType().equals("pending")) {
+                if (item.getClass().equals(PendingFriendRow.class)) {
                     item.showRow();
                 }
             }
@@ -466,7 +457,8 @@ public class LandingListHelper {
                         public void onSuccess(JSONObject response) {
                             hideLoading();
                             destroy();
-                            if (rowList.get(1).rowType().equals("friend")) {
+
+                            if (rowList.get(1).getClass().equals(AddedFriendRow.class)) {
                                 rowList.get(0).hideRow();
                             }
                             absoluteTotal--;
@@ -514,7 +506,8 @@ public class LandingListHelper {
                             absoluteTotal--;
                             ((PendingFriendHeaderRow) rowList.get(0)).setHeadingText("Pending Friends (" + absoluteTotal + ")");
                             destroy();
-                            if (rowList.get(1).rowType().equals("friend")) {
+
+                            if (rowList.get(1).getClass().equals(AddedFriendRow.class)) {
                                 rowList.get(0).hideRow();
                             }
                         }
@@ -544,10 +537,6 @@ public class LandingListHelper {
             progressBar.setVisibility(View.VISIBLE);
             deleteButton.setVisibility(View.INVISIBLE);
             addButton.setVisibility(View.INVISIBLE);
-        }
-
-        public String rowType() {
-            return "pending";
         }
 
         public void onRowClick(View v) {
@@ -600,10 +589,6 @@ public class LandingListHelper {
             subTextView.setText(friendUsername);
 
             mainList.addView(row, index);
-        }
-
-        public String rowType() {
-            return "friend";
         }
 
         public void onRowClick(View v) {
