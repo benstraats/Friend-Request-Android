@@ -237,8 +237,8 @@ public class SearchListHelper {
             subTextView = (TextView) cl.getChildAt(1);
             statusText = (TextView) cl.getChildAt(2);
 
-            mainTextView.setText(otherUserUsername);
-            subTextView.setText(otherUserName);
+            mainTextView.setText(otherUserName);
+            subTextView.setText(otherUserUsername);
             statusText.setText(status);
 
             loadingBar = (ProgressBar) cl.getChildAt(3);
