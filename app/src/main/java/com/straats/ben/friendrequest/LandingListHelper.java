@@ -189,8 +189,6 @@ public class LandingListHelper {
         showLoading();
         currentlyLoadingFriends = true;
 
-        final VolleyWrapper vw = VolleyWrapper.getInstance(c);
-
         VolleyWrapper.VolleyCallback callback = new VolleyWrapper.VolleyCallback() {
             @Override
             public void onSuccess(JSONObject response) {
