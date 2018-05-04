@@ -182,8 +182,7 @@ public class SearchListHelper {
                         return false;
                     }
                 });
-
-
+                
                 currentSearchText = searchEditText.getText().toString();
                 currentlySearching = true;
                 fullyDoneSearching = false;
@@ -192,7 +191,6 @@ public class SearchListHelper {
                         requestCallback);
             }
         });
-
 
         scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
             @Override
